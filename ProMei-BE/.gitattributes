@@ -1,0 +1,16 @@
+# Normaliza finais de linha no repositorio: tudo LF, independente do SO do dev.
+# Sem isso, editores no Windows salvam CRLF e o Prettier (endOfLine: "lf") reprova no CI.
+* text=auto eol=lf
+
+# Binarios: nunca normalizar.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+
+# Lockfile: diff mais limpo nas revisoes.
+pnpm-lock.yaml linguist-generated=true -diff

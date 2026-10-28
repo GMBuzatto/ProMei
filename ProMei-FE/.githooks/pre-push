@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# Gate LOCAL de pre-push — paliativo enquanto os rulesets do GitHub estao
+# indisponiveis (repositorio privado no plano Free). Ver docs/11-infra-ci-cd.md.
+#
+# Espelha ProMei-BE/.githooks/pre-push. Faz duas coisas, NESTA ordem:
+#   1. Bloqueia push direto para development, staging e main;
+#   2. So entao roda os gates do CI (format, lint, typecheck, test).
+# A ordem importa: se o push ja vai ser recusado pela branch, nao faz sentido
+# gastar minutos rodando lint e teste antes de dizer isso.
+#
+# Instalacao: pnpm hooks:install  (ou git config core.hooksPath .githooks)
+# Bypass emergencial: PUSH_SEM_GATE=1 git push   (ou git push --no-verify)
+
+set -uo pipefail
+
+BRANCHES_PROTEGIDAS="development staging main master"
+
+if [ "${PUSH_SEM_GATE:-0}" = "1" ]; then
+  echo "pre-push: PUSH_SEM_GATE=1, gates ignorados."
+  exit 0
+fi
+
+# 1) Push direto para branch protegida
+bloqueia_se_protegida() {
+  local branch="${1:-}"
+  [ -z "$branch" ] && return 0
+
+  for protegida in $BRANCHES_PROTEGIDAS; do
+    if [ "$branch" = "$protegida" ]; then
+      echo ""
+      echo "  BLOQUEADO: push direto para '$branch' nao e permitido."
+      echo "  Abra um Pull Request a partir de uma branch feat/*, fix/* ou chore/*."
+      echo ""
+      echo "  Emergencia: PUSH_SEM_GATE=1 git push"
+      echo ""
+      exit 1
+    fi
+  done
+}
+
+viu_ref=0
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  [ -z "${remote_ref:-}" ] && continue
+  viu_ref=1
+  bloqueia_se_protegida "${remote_ref#refs/heads/}"
+done
+
+# O git chama o hook com stdin VAZIO quando nao ha commit a enviar
+# ("Everything up-to-date"). Sem este fallback, um push estando em development
+# pulava o bloqueio e ia direto para os gates, sem explicar o motivo real.
+if [ "$viu_ref" -eq 0 ]; then
+  bloqueia_se_protegida "$(git branch --show-current 2>/dev/null)"
+fi
+
+# 2) Mesmos gates do CI
+echo "pre-push: rodando gates locais (format, lint, typecheck, test)..."
+
+GATES_FALHOS=""
+run() {
+  echo "  -> $1"
+  # ':' vira nome de arquivo invalido no Windows (format:check) — troca por '-'.
+  local log="/tmp/pre-push-${1//:/-}.log"
+  if ! pnpm "$@" >"$log" 2>&1; then
+    echo ""
+    echo "  FALHOU: pnpm $*"
+    tail -30 "$log"
+    echo ""
+    GATES_FALHOS="$GATES_FALHOS $1"
+  fi
+}
+
+# Como corrigir cada gate, exibido so para os que reprovaram.
+correcao() {
+  case "$1" in
+    format:check) echo "pnpm format          # reescreve os arquivos formatados" ;;
+    lint)         echo "pnpm lint:fix        # corrige o que o ESLint resolve sozinho" ;;
+    typecheck)    echo "pnpm typecheck       # sem autofix: corrija os erros de tipo" ;;
+    test)         echo "pnpm test            # rode e conserte os testes vermelhos" ;;
+    *)            echo "pnpm $1" ;;
+  esac
+}
+
+run format:check
+run lint
+run typecheck
+run test
+
+# Audit nao bloqueia o push: depende de rede e o gate real esta no CI.
+if ! pnpm audit --audit-level critical >/dev/null 2>&1; then
+  echo "  AVISO: 'pnpm audit --audit-level critical' acusou algo (ou nao ha rede). O CI vai reprovar."
+fi
+
+if [ -n "$GATES_FALHOS" ]; then
+  echo ""
+  echo "  BLOQUEADO: push cancelado porque os gates locais reprovaram."
+  echo "  Reprovou em:$GATES_FALHOS"
+  echo ""
+  echo "  Como corrigir:"
+  for gate in $GATES_FALHOS; do
+    echo "    $(correcao "$gate")"
+  done
+  echo ""
+  echo "  Log completo de cada gate:"
+  for gate in $GATES_FALHOS; do
+    echo "    /tmp/pre-push-${gate//:/-}.log"
+  done
+  echo ""
+  echo "  Emergencia: PUSH_SEM_GATE=1 git push"
+  echo ""
+  exit 1
+fi
+
+echo "pre-push: tudo verde."
+exit 0

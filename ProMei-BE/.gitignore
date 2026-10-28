@@ -1,0 +1,14 @@
+node_modules/
+dist/
+src/generated/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+*.tsbuildinfo
+# PDFs de comprovantes no disco (RECEIPT_STORAGE_DIR) — regeneráveis a partir do
+# banco, nunca fonte de verdade (docs/11-infra-ci-cd.md).
+storage/
+_tmp_*
+.DS_Store

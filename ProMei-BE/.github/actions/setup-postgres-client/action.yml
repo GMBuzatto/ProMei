@@ -1,0 +1,11 @@
+name: Setup Postgres client
+description: Instala pg_dump/pg_restore/psql (Postgres 16) no runner.
+
+runs:
+  using: composite
+  steps:
+    - name: Instalar cliente Postgres 16
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client-16

@@ -1,0 +1,71 @@
+name: Deploy Production
+
+# docs/11-infra-ci-cd.md: tag v* em main -> deploy producao (aprovacao manual) ->
+# migracao -> smoke test.
+#
+# A aprovacao manual e configurada no Environment "production" do repositorio
+# (Settings > Environments > production > Required reviewers) — isso nao pode
+# ser feito por YAML, precisa ser configurado uma vez no GitHub.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  deploy:
+    name: migrate-and-deploy
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Historico completo: precisa pra checar se a tag esta em main (abaixo).
+          fetch-depth: 0
+
+      - name: Confirmar que a tag aponta pra um commit em main
+        # docs/10-ambientes.md: producao e "tag v* em main". A protecao de
+        # branch server-side ainda nao esta ativa (docs/11), entao isso e a
+        # unica barreira contra uma tag v* criada fora de main.
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "Tag $GITHUB_REF_NAME nao esta em main — deploy de producao abortado." >&2
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Migracao Prisma (antes do switch)
+        run: pnpm db:migrate:deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Instalar Railway CLI
+        run: pnpm add -g @railway/cli
+
+      - name: Deploy no Railway
+        run: railway up --service "$RAILWAY_SERVICE_ID" --environment production --ci
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
+
+      - name: Liveness pos-deploy
+        uses: ./.github/actions/smoke-test
+        with:
+          url: ${{ vars.SERVICE_URL }}${{ vars.API_PREFIX }}/health/ready
+
+      - name: Smoke de fluxo (roteiro do docs/15)
+        run: bash scripts/smoke-test.sh
+        env:
+          BASE_URL: ${{ vars.SERVICE_URL }}${{ vars.API_PREFIX }}
+          SMOKE_ADMIN_EMAIL: ${{ vars.SMOKE_ADMIN_EMAIL }}
+          SMOKE_ADMIN_PASSWORD: ${{ secrets.SMOKE_ADMIN_PASSWORD }}

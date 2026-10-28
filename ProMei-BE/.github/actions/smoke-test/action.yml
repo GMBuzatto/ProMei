@@ -1,0 +1,37 @@
+name: Smoke test
+description: Faz polling de um endpoint ate responder 200 ou estourar tentativas.
+
+inputs:
+  url:
+    description: 'URL a testar (ex.: SERVICE_URL + API_PREFIX + /health/ready)'
+    required: true
+  attempts:
+    description: Numero de tentativas
+    required: false
+    default: '10'
+  delay_seconds:
+    description: Espera entre tentativas, em segundos
+    required: false
+    default: '10'
+
+runs:
+  using: composite
+  steps:
+    - name: Poll ate 200
+      shell: bash
+      env:
+        SMOKE_URL: ${{ inputs.url }}
+        SMOKE_ATTEMPTS: ${{ inputs.attempts }}
+        SMOKE_DELAY: ${{ inputs.delay_seconds }}
+      run: |
+        for i in $(seq 1 "$SMOKE_ATTEMPTS"); do
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$SMOKE_URL" || true)
+          if [ "$code" = "200" ]; then
+            echo "Smoke test OK ($SMOKE_URL)"
+            exit 0
+          fi
+          echo "Tentativa $i: HTTP $code, aguardando..."
+          sleep "$SMOKE_DELAY"
+        done
+        echo "Smoke test falhou: $SMOKE_URL nao respondeu 200 a tempo" >&2
+        exit 1

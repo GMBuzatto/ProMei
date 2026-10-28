@@ -1,0 +1,736 @@
+// Schema Prisma - ProMei
+// ERD de referência: docs/06-arquitetura.md
+// Padrões de nomenclatura: docs/08-padroes-de-desenvolvimento.md (tabelas/colunas snake_case)
+
+generator client {
+  // Prisma 7: cliente sem Rust. `output` e obrigatorio — o client deixou de ser
+  // gerado dentro de node_modules.
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  // NestJS compila para CommonJS; sem isso o client sai como ESM e a app nao sobe.
+  moduleFormat        = "cjs"
+  // Sem isso, a extensao dos imports internos do client gerado (ex.:
+  // "./internal/class.EXT") e auto-detectada e diverge entre SOs — em Linux
+  // (CI/Docker) saiu ".ts", quebrando `node dist/main.js` com MODULE_NOT_FOUND
+  // (o dist so tem .js compilado). Fixando em "js", que e o que `nest build`
+  // realmente produz.
+  importFileExtension = "js"
+}
+
+datasource db {
+  // A connection string vive em prisma.config.ts (Prisma 7). Manter `url` aqui
+  // e erro de schema na v7.
+  provider = "postgresql"
+}
+
+enum CompanyStatus {
+  ACTIVE
+  SUSPENDED
+  CANCELED
+
+  @@map("company_status")
+}
+
+enum CompanySegment {
+  FOOD
+  HEALTH
+  RETAIL
+  SERVICES
+  OTHER
+
+  @@map("company_segment")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("user_status")
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELED
+
+  @@map("subscription_status")
+}
+
+enum ItemStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("item_status")
+}
+
+enum StockMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+
+  @@map("stock_movement_type")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Fase 2 — Cliente + Compras (docs/17 a 32)
+// ─────────────────────────────────────────────────────────────────────────
+// Enums novos criados de uma vez (docs/27) — a maioria só passa a ter tabela
+// dona a partir dos épicos 9-13; migração `add_finance_enums` só cria os
+// tipos, sem referência de coluna ainda.
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("customer_status")
+}
+
+enum CustomerFinancialStatus {
+  REGULAR
+  OVERDUE
+  DELINQUENT
+
+  @@map("customer_financial_status")
+}
+
+enum SaleKind {
+  CASH
+  CREDIT
+
+  @@map("sale_kind")
+}
+
+enum SaleStatus {
+  PENDING
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELED
+
+  @@map("sale_status")
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  OTHER
+
+  @@map("payment_method")
+}
+
+enum SaleBlockReason {
+  INSUFFICIENT_LIMIT
+  OVERDUE_PAYMENT
+  CUSTOMER_DELINQUENT
+  INSUFFICIENT_STOCK
+  CUSTOMER_INACTIVE
+  CUSTOMER_BLOCKED
+  ITEM_INACTIVE
+  INVALID_DUE_DATE
+
+  @@map("sale_block_reason")
+}
+
+// Hoje com um único valor (PD-01: não há liberação de estoque). Continua
+// sendo enum, e não booleano, para ser o ponto de extensão de categorias
+// futuras de liberação administrativa.
+enum SaleAuthorizationType {
+  CREDIT
+
+  @@map("sale_authorization_type")
+}
+
+enum StockMovementOrigin {
+  MANUAL
+  SALE
+  SALE_CANCELLATION
+
+  @@map("stock_movement_origin")
+}
+
+enum CustomerStatusReason {
+  SALE
+  PAYMENT
+  PAYMENT_REVERSAL
+  SALE_CANCELED
+  OVERDUE_JOB
+  MANUAL
+
+  @@map("customer_status_reason")
+}
+
+model Company {
+  id        String         @id @default(uuid()) @db.Uuid
+  name      String
+  document  String         @unique
+  status    CompanyStatus  @default(ACTIVE)
+  segment   CompanySegment @default(OTHER)
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  users                User[]
+  roles                Role[]
+  items                Item[]
+  subscription         Subscription?
+  stockMovements       StockMovement[]
+  receipts             Receipt[]
+  auditLogs            AuditLog[]
+  financeSettings      CompanyFinanceSettings?
+  customers            Customer[]
+  customerStatusEvents CustomerStatusEvent[]
+  sales                Sale[]
+  saleItems            SaleItem[]
+  payments             Payment[]
+
+  @@map("companies")
+}
+
+/// Configuração financeira da empresa (docs/20, docs/27). 1:1 com `companies`.
+/// Tabela separada, e não colunas em `companies`: tem ciclo de vida e
+/// sensibilidade próprios, e a existência da linha responde "a empresa já
+/// configurou o financeiro?" sem depender de `closing_day IS NULL`.
+model CompanyFinanceSettings {
+  id        String @id @default(uuid()) @db.Uuid
+  companyId String @unique @map("company_id") @db.Uuid
+
+  // CHECK (closing_day BETWEEN 1 AND 31) — escrito à mão na migração, Prisma
+  // não modela CHECK.
+  closingDay      Int    @map("closing_day")
+  timezone        String
+  // CHECK (delinquency_days > 0)
+  delinquencyDays Int    @map("delinquency_days")
+  // CHECK (default_due_days > 0)
+  defaultDueDays  Int    @map("default_due_days")
+
+  // NULL = liberação administrativa indisponível. Bloqueio é o default;
+  // exceção exige configuração (docs/27).
+  adminPasswordHash           String?   @map("admin_password_hash")
+  adminPasswordUpdatedAt      DateTime? @map("admin_password_updated_at") @db.Timestamptz(3)
+  adminPasswordFailedAttempts Int       @default(0) @map("admin_password_failed_attempts")
+  adminPasswordLockedUntil    DateTime? @map("admin_password_locked_until") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("company_finance_settings")
+}
+
+/// Comprador cadastrado de uma empresa (docs/18, docs/27, RN-30 a RN-38).
+/// Histórico, totais e situação financeira são DERIVADOS das vendas — não
+/// há coluna aqui para nada disso além do cache de `financialStatus`.
+model Customer {
+  id        String  @id @default(uuid()) @db.Uuid
+  companyId String  @map("company_id") @db.Uuid
+  name      String
+  // Opcional de propósito (docs/18): exigir documento para cadastrar
+  // "Dona Maria da esquina" empurraria o usuário para vender sem cliente —
+  // o oposto do que se quer em venda a prazo. Único POR EMPRESA quando
+  // informado (RN-31); índice único é PARCIAL, escrito à mão na migração
+  // (Prisma não modela índice único parcial).
+  document  String?
+  email     String?
+  phone     String?
+  address   Json?
+  notes     String?
+
+  // CHECK (credit_limit >= 0) — escrito à mão na migração.
+  creditLimit Decimal @default(0) @map("credit_limit") @db.Decimal(12, 2)
+
+  status           CustomerStatus          @default(ACTIVE)
+  // Cache materializado (RN-34): quem manda é `customer-status.policy.ts`,
+  // nunca este campo — a validação de venda sempre recalcula.
+  financialStatus  CustomerFinancialStatus @default(REGULAR) @map("financial_status")
+  // Bloqueio MANUAL do operador, independente da situação derivada.
+  blockedForCredit Boolean                 @default(false) @map("blocked_for_credit")
+  // LGPD (PD-17): preenchido quando o cadastro é anonimizado a pedido do
+  // titular. Vendas e pagamentos permanecem — só o cadastro é esvaziado.
+  anonymizedAt     DateTime?               @map("anonymized_at") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  company      Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  statusEvents CustomerStatusEvent[]
+  sales        Sale[]
+  payments     Payment[]
+
+  @@unique([companyId, document], map: "customers_company_document_uniq")
+  // Âncora da FK composta com o tenant (docs/27): tabelas futuras que
+  // referenciam cliente (sales, e por elas payments/sale_authorizations)
+  // fazem FOREIGN KEY (customer_id, company_id) REFERENCES customers (id,
+  // company_id). Declarado aqui — e não só como SQL cru na migração — para o
+  // Prisma não achar que é drift e tentar remover numa migração futura.
+  @@unique([id, companyId], map: "customers_id_company_uniq")
+  @@index([companyId])
+  @@index([companyId, status])
+  @@index([companyId, financialStatus])
+  @@index([companyId, name])
+  @@map("customers")
+}
+
+/// Histórico append-only de situação financeira (docs/18, docs/21, RN-66).
+/// Uma linha por transição, nunca editada — é o que responde "desde quando
+/// esse cliente está inadimplente" sem varrer o histórico de vendas.
+///
+/// `saleId`/`paymentId` NÃO têm `@relation`: `sales` e `payments` ainda não
+/// existem (chegam nos épicos 10/11). São colunas UUID soltas por enquanto;
+/// a FK entra numa migração futura, quando as tabelas existirem.
+model CustomerStatusEvent {
+  id         String @id @default(uuid()) @db.Uuid
+  companyId  String @map("company_id") @db.Uuid
+  customerId String @map("customer_id") @db.Uuid
+
+  // NULL só no primeiro evento do cliente.
+  fromStatus CustomerFinancialStatus? @map("from_status")
+  toStatus   CustomerFinancialStatus  @map("to_status")
+  reason     CustomerStatusReason
+
+  saleId    String? @map("sale_id") @db.Uuid
+  paymentId String? @map("payment_id") @db.Uuid
+  // NULL quando a transição veio do job de atraso (docs/21), não de um usuário.
+  userId    String? @map("user_id") @db.Uuid
+  // Ex.: total vencido, dias de atraso no momento da transição.
+  context   Json?
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, customerId, createdAt])
+  @@index([companyId, toStatus, createdAt])
+  @@map("customer_status_events")
+}
+
+model User {
+  id                  String     @id @default(uuid()) @db.Uuid
+  companyId           String?    @map("company_id") @db.Uuid
+  email               String     @unique
+  passwordHash        String     @map("password_hash")
+  status              UserStatus @default(ACTIVE)
+  failedLoginAttempts Int        @default(0) @map("failed_login_attempts")
+  lockedUntil         DateTime?  @map("locked_until") @db.Timestamptz(3)
+  // Quantos bloqueios consecutivos o usuario acumulou. Alimenta o bloqueio
+  // progressivo do RF-03/docs-09: cada reincidencia dobra a duracao.
+  lockoutCount        Int        @default(0) @map("lockout_count")
+  // RF-04: senha definida por admin obriga troca no primeiro acesso.
+  mustChangePassword  Boolean    @default(false) @map("must_change_password")
+  createdAt           DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  company              Company?              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  roles                UserRole[]
+  stockMovements       StockMovement[]
+  auditLogs            AuditLog[]
+  refreshTokens        RefreshToken[]
+  customerStatusEvents CustomerStatusEvent[]
+  createdSales         Sale[]                @relation("SaleCreatedBy")
+  canceledSales        Sale[]                @relation("SaleCanceledBy")
+  createdPayments      Payment[]             @relation("PaymentCreatedBy")
+  reversedPayments     Payment[]             @relation("PaymentReversedBy")
+
+  @@index([companyId])
+  @@map("users")
+}
+
+model Role {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String?  @map("company_id") @db.Uuid
+  name      String
+  isSystem  Boolean  @default(false) @map("is_system")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  company     Company?         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@map("roles")
+}
+
+model Permission {
+  id        String   @id @default(uuid()) @db.Uuid
+  resource  String
+  action    String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  roles RolePermission[]
+
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+model UserRole {
+  userId    String   @map("user_id") @db.Uuid
+  roleId    String   @map("role_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  roleId       String   @map("role_id") @db.Uuid
+  permissionId String   @map("permission_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Plan {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  price     Decimal  @db.Decimal(10, 2)
+  period    String
+  limits    Json
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id        String             @id @default(uuid()) @db.Uuid
+  companyId String             @unique @map("company_id") @db.Uuid
+  planId    String             @map("plan_id") @db.Uuid
+  status    SubscriptionStatus @default(TRIAL)
+  renewsAt  DateTime           @map("renews_at") @db.Date
+  createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plan    Plan    @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([planId])
+  @@map("subscriptions")
+}
+
+model Item {
+  id          String     @id @default(uuid()) @db.Uuid
+  companyId   String     @map("company_id") @db.Uuid
+  sku         String
+  name        String
+  description String?
+  unit        String
+  category    String?
+  price       Decimal    @db.Decimal(10, 2)
+  stock       Int        @default(0)
+  minStock    Int        @default(0) @map("min_stock")
+  status      ItemStatus @default(ACTIVE)
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  company        Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  stockMovements StockMovement[]
+  saleItems      SaleItem[]
+
+  // RN-20: SKU e unico POR EMPRESA, nao globalmente — duas empresas podem usar
+  // o mesmo codigo sem conflito.
+  @@unique([companyId, sku])
+  // Âncora da FK composta com o tenant (docs/27), mesmo papel de
+  // `customers_id_company_uniq`: permite `sale_items` referenciar
+  // `(item_id, company_id)` e barrar item de outra empresa numa venda.
+  @@unique([id, companyId], map: "items_id_company_uniq")
+  @@index([companyId])
+  // RF-31: filtro por categoria sempre vem junto do escopo de empresa.
+  @@index([companyId, category])
+  @@map("items")
+}
+
+model StockMovement {
+  id        String            @id @default(uuid()) @db.Uuid
+  companyId String            @map("company_id") @db.Uuid
+  itemId    String            @map("item_id") @db.Uuid
+  userId    String            @map("user_id") @db.Uuid
+  receiptId String?           @unique @map("receipt_id") @db.Uuid
+  type      StockMovementType
+  quantity  Int
+  reason    String?
+  createdAt DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  // Origem da movimentação (docs/23, docs/27). MANUAL é o default — toda
+  // movimentação existente antes da fase 2 vira MANUAL sem exceção.
+  origin     StockMovementOrigin @default(MANUAL)
+  // Preenchidos JUNTOS quando origin ∈ {SALE, SALE_CANCELLATION}, ambos NULL
+  // em MANUAL (CHECK stock_movements_origin_refs, escrito à mão na
+  // migração — Prisma não modela CHECK).
+  saleId     String?             @map("sale_id") @db.Uuid
+  saleItemId String?             @map("sale_item_id") @db.Uuid
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  item     Item      @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  receipt  Receipt?  @relation(fields: [receiptId], references: [id], onDelete: SetNull)
+  sale     Sale?     @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  saleItem SaleItem? @relation(fields: [saleItemId], references: [id], onDelete: Restrict)
+
+  // A idempotência de verdade (docs/23): um item de venda tem no máximo uma
+  // baixa (SALE) e uma devolução (SALE_CANCELLATION). Declarado aqui para o
+  // Prisma não achar drift; a migração escreve a versão PARCIAL à mão
+  // (`WHERE sale_item_id IS NOT NULL`) — Prisma não modela índice único
+  // parcial, e é ela, não a transação nem o estado da venda, que sobrevive a
+  // retry de cliente, replay de requisição, bug de service e deploy
+  // concorrente.
+  @@unique([saleItemId, origin], map: "stock_movements_sale_item_origin_uniq")
+  @@index([companyId])
+  @@index([itemId])
+  @@index([userId])
+  // RF-34: historico por item e por periodo. company_id + item_id cobre o
+  // filtro por item; company_id + created_at cobre o filtro so por periodo
+  // (RNF-03).
+  @@index([companyId, itemId, createdAt])
+  @@index([companyId, createdAt])
+  @@index([saleId])
+  @@map("stock_movements")
+}
+
+model Receipt {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  number    BigInt
+  pdfUrl    String?  @map("pdf_url")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  // Comprovante de VENDA (docs/23#impacto-no-comprovante, docs/33, RN-86):
+  // nullable e único — uma venda gera no máximo um comprovante, nunca um
+  // por item. Coexiste com a relação inversa `stockMovement` (comprovante
+  // de saída manual, MVP); exatamente uma das duas origens é preenchida
+  // por construção (quem aloca decide: `InventoryService` nunca passa
+  // `saleId`, `SalesService` sempre passa). Índice único é PARCIAL, escrito
+  // à mão na migração (Prisma não modela índice único parcial) — mesmo
+  // padrão de `customers_company_document_uniq`.
+  saleId String? @unique @map("sale_id") @db.Uuid
+
+  company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  stockMovement StockMovement?
+  sale          Sale?          @relation(fields: [saleId], references: [id], onDelete: Restrict)
+
+  @@unique([companyId, number])
+  @@index([companyId])
+  @@map("receipts")
+}
+
+/// Fato de negócio da venda (docs/19, docs/27, ADR-0006, RN-40 a RN-47).
+/// Criada e confirmada na MESMA transação: não existe rascunho persistido
+/// nem estado `BLOCKED` (ADR-0006) — bloqueio é resultado de validação
+/// anterior à existência da venda, não um estado dela. As invariantes que
+/// não podem depender de código correto (tipo × cliente/vencimento/método,
+/// coerência do cancelamento, faixa do pago, ordem do período) são `CHECK`
+/// escritos à mão na migração — Prisma não modela `CHECK`.
+model Sale {
+  id         String  @id @default(uuid()) @db.Uuid
+  companyId  String  @map("company_id") @db.Uuid
+  // NULL só em venda à vista (CHECK sales_credit_requires_customer). Venda a
+  // prazo sem cliente é impossível por construção, não por validação.
+  customerId String? @map("customer_id") @db.Uuid
+
+  // Sequencial POR EMPRESA (RN-46), emitido dentro da transação da venda —
+  // mesmo padrão de `receipts.number`.
+  number BigInt
+
+  kind          SaleKind
+  status        SaleStatus     @default(PENDING)
+  // Obrigatório em CASH (CHECK sales_cash_requires_method).
+  paymentMethod PaymentMethod? @map("payment_method")
+
+  // CHECK (total > 0) — venda de valor zero não é venda.
+  total      Decimal @db.Decimal(12, 2)
+  // CHECK (discount >= 0)
+  discount   Decimal @default(0) @db.Decimal(12, 2)
+  // CHECK (0 <= paid_amount <= total) — sales_paid_amount_within_total.
+  paidAmount Decimal @default(0) @map("paid_amount") @db.Decimal(12, 2)
+
+  // Obrigatório em CREDIT (CHECK sales_credit_requires_due_date). Sem
+  // vencimento não há atraso, e sem atraso não há inadimplência.
+  dueDate DateTime? @map("due_date") @db.Date
+
+  // Fato no mundo: é ele que define a qual período a venda pertence.
+  soldAt      DateTime @default(now()) @map("sold_at") @db.Timestamptz(3)
+  // Janela do período CONGELADA no momento da venda (docs/20#congelamento):
+  // mudar `closing_day` depois não reclassifica histórico.
+  periodStart DateTime @map("period_start") @db.Timestamptz(3)
+  periodEnd   DateTime @map("period_end") @db.Timestamptz(3)
+
+  notes String?
+
+  createdBy String @map("created_by") @db.Uuid
+
+  // Preenchidos JUNTOS no cancelamento (CHECK sales_cancel_fields), nunca
+  // parcialmente — venda nunca é excluída (RN-45), correção é cancelamento.
+  canceledAt   DateTime? @map("canceled_at") @db.Timestamptz(3)
+  canceledBy   String?   @map("canceled_by") @db.Uuid
+  cancelReason String?   @map("cancel_reason")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  company        Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  // FK composta com o tenant (docs/27) — a barreira que nenhuma Client
+  // Extension pega: veda venda de uma empresa apontando para cliente de
+  // outra, mesmo com o escopo de tenant funcionando na aplicação.
+  customer       Customer?       @relation(fields: [customerId, companyId], references: [id, companyId], onDelete: Restrict, map: "sales_customer_same_company")
+  createdByUser  User            @relation("SaleCreatedBy", fields: [createdBy], references: [id], onDelete: Restrict)
+  canceledByUser User?           @relation("SaleCanceledBy", fields: [canceledBy], references: [id], onDelete: Restrict)
+  items          SaleItem[]
+  stockMovements StockMovement[]
+  payments       Payment[]
+  receipt        Receipt?
+
+  @@unique([companyId, number])
+  // Âncora da FK composta com o tenant (docs/27), mesmo papel de
+  // `customers_id_company_uniq`/`items_id_company_uniq`: permite `payments`
+  // referenciar `(sale_id, company_id)` e barrar recebimento de outra
+  // empresa apontando para esta venda.
+  @@unique([id, companyId], map: "sales_id_company_uniq")
+  @@index([companyId, soldAt]) // fechamento (competência)
+  @@index([companyId, status, dueDate]) // em aberto, atraso, job diário
+  @@index([companyId, customerId, soldAt]) // histórico do cliente
+  @@index([companyId, customerId, kind, soldAt]) // utilizado no período
+  @@index([companyId, createdBy])
+  @@map("sales")
+}
+
+/// Item da venda (docs/19, docs/27, RN-44). Guarda CÓPIA de preço, nome e
+/// SKU do item no momento da venda: o item é editável (`PATCH /items/:id`),
+/// e sem a cópia mudar o preço amanhã reescreveria o valor de todas as
+/// vendas de ontem — o fechamento do mês passado mudaria sozinho.
+model SaleItem {
+  id        String @id @default(uuid()) @db.Uuid
+  companyId String @map("company_id") @db.Uuid
+  saleId    String @map("sale_id") @db.Uuid
+  itemId    String @map("item_id") @db.Uuid
+
+  // CHECK (quantity > 0)
+  quantity  Int
+  // Cópia do preço do item no momento da venda.
+  unitPrice Decimal @map("unit_price") @db.Decimal(10, 2)
+  // unit_price × quantity, arredondado a 2 casas (sale-totals.ts).
+  // CHECK (total > 0)
+  total     Decimal @db.Decimal(12, 2)
+
+  itemNameSnapshot String @map("item_name_snapshot")
+  itemSkuSnapshot  String @map("item_sku_snapshot")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  // CASCADE: item de venda não tem vida própria, é parte do agregado — na
+  // prática nunca dispara, porque venda não é excluída (RN-45); existe para
+  // a exclusão de empresa (cascade a partir de `companies`) não deixar órfão.
+  sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  // FK composta com o tenant (docs/27), mesmo motivo de `sale.customer`:
+  // veda item de outra empresa numa venda.
+  item    Item    @relation(fields: [itemId, companyId], references: [id, companyId], onDelete: Restrict, map: "sale_items_item_same_company")
+
+  stockMovements StockMovement[]
+
+  @@index([saleId])
+  @@index([companyId, itemId]) // "quanto vendi deste item"
+  @@map("sale_items")
+}
+
+/// Recebimento de uma venda (docs/19, docs/22, docs/27, RN-70 a RN-76).
+/// Venda à vista nasce com um Payment do valor total já registrado — é
+/// registrá-lo que faz "total pago" do cliente e "total recebido" do
+/// fechamento serem uma soma sobre `payments`, nunca um segundo caminho que
+/// precisa concordar com `sales.paid_amount`. Sem `updatedAt`: recebimento
+/// não é editado, o estorno preenche campos que só vão de NULL a
+/// preenchido, sob lock, no service.
+model Payment {
+  id         String  @id @default(uuid()) @db.Uuid
+  companyId  String  @map("company_id") @db.Uuid
+  saleId     String  @map("sale_id") @db.Uuid
+  // Cópia da venda — NULL em venda à vista sem cliente, mesma regra de
+  // `sales.customer_id`.
+  customerId String? @map("customer_id") @db.Uuid
+
+  // CHECK (amount > 0)
+  amount Decimal       @db.Decimal(12, 2)
+  method PaymentMethod
+  // Fato no mundo — pode ser anterior a `createdAt` num lançamento tardio.
+  paidAt DateTime      @map("paid_at") @db.Timestamptz(3)
+  notes  String?
+
+  createdBy String @map("created_by") @db.Uuid
+
+  // Preenchidos JUNTOS no estorno (CHECK payments_reversal_fields), nunca
+  // parcialmente. Não apaga: marca `reversed_at` (RN-74).
+  reversedAt     DateTime? @map("reversed_at") @db.Timestamptz(3)
+  reversedBy     String?   @map("reversed_by") @db.Uuid
+  reversalReason String?   @map("reversal_reason")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  // FK composta com o tenant (docs/27), mesmo motivo de `sale.customer` e
+  // `sale_item.item`: veda recebimento de outra empresa apontando para esta
+  // venda.
+  sale     Sale      @relation(fields: [saleId, companyId], references: [id, companyId], onDelete: Restrict, map: "payments_sale_same_company")
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  creator  User      @relation("PaymentCreatedBy", fields: [createdBy], references: [id], onDelete: Restrict)
+  reverser User?     @relation("PaymentReversedBy", fields: [reversedBy], references: [id], onDelete: Restrict)
+
+  @@index([saleId])
+  @@index([companyId, paidAt]) // fechamento (caixa)
+  @@index([companyId, customerId, paidAt]) // histórico de pagamentos do cliente
+  @@index([companyId, method, paidAt]) // recebido por forma de pagamento
+  @@map("payments")
+}
+
+/// RF-02: refresh 7d, hash no banco, rotacionado a cada uso, revogável.
+/// familyId agrupa todas as rotações de uma mesma sessão de login: reuso de um
+/// token já rotacionado (revokedAt setado) invalida a família inteira.
+/// rememberMe (desnormalizado) aplica-se a toda a família: cada token herda o TTL
+/// da família durante a rotação.
+model RefreshToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  familyId   String    @map("family_id") @db.Uuid
+  tokenHash  String    @unique @map("token_hash")
+  rememberMe Boolean   @default(false) @map("remember_me")
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String?  @map("company_id") @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  action    String
+  resource  String
+  diff      Json?
+  ip        String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

@@ -1,0 +1,57 @@
+name: Rollback
+
+# Dispara o rollback (scripts/rollback.sh) para staging ou producao via Railway.
+# Usado tanto para incidente real quanto para o ENSAIO de rollback exigido em
+# docs/15-go-live.md ("Rollback documentado e ensaiado").
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: 'Ambiente a reverter'
+        required: true
+        type: choice
+        options: [staging, production]
+      deployment_id:
+        description: 'ID do deployment alvo (vazio = deployment anterior bem-sucedido)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    name: rollback
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Executar rollback
+        run: |
+          if [ -n "$DEPLOYMENT_ID" ]; then
+            bash scripts/rollback.sh --to "$DEPLOYMENT_ID"
+          else
+            bash scripts/rollback.sh
+          fi
+        env:
+          # Input do workflow_dispatch passado via env, nunca interpolado
+          # direto no `run:` — string arbitraria do usuario nao deve virar
+          # sintaxe de shell (GitHub Actions script injection).
+          DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
+          RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+
+      - name: Liveness pos-rollback
+        uses: ./.github/actions/smoke-test
+        with:
+          url: ${{ vars.SERVICE_URL }}${{ vars.API_PREFIX }}/health/ready
+
+      - name: Smoke de fluxo (roteiro do docs/15)
+        run: bash scripts/smoke-test.sh
+        env:
+          BASE_URL: ${{ vars.SERVICE_URL }}${{ vars.API_PREFIX }}
+          SMOKE_ADMIN_EMAIL: ${{ vars.SMOKE_ADMIN_EMAIL }}
+          SMOKE_ADMIN_PASSWORD: ${{ secrets.SMOKE_ADMIN_PASSWORD }}

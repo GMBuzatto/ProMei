@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --acc:#7CE0C0; --acc2:#FFB86B; --read:1080px; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:#0B0D10; color:#E6EAF2; font-family:'IBM Plex Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:var(--acc); text-decoration:none; }
+  a:hover { color:#fff; }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb { background:#232A36; border-radius:8px; }
+  ::-webkit-scrollbar-track { background:#0B0D10; }
+</style>
+</helmet>
+<div style="display:grid; grid-template-columns:minmax(200px,258px) minmax(0,1fr); min-height:100vh; background:#0B0D10">
+
+  <aside style="position:sticky; top:0; height:100vh; overflow-y:auto; borderRight:1px solid #1B212C; background:#0E1116; padding:32px 20px 48px; display:flex; flex-direction:column; gap:24px">
+    <div style="display:flex; flex-direction:column; gap:6px">
+      <div style="display:flex; align-items:center; gap:10px">
+        <div style="width:26px; height:26px; border-radius:7px; background:linear-gradient(140deg,var(--acc,#7CE0C0),#2B7A62); box-shadow:0 0 0 1px #1B212C"></div>
+        <span style="font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:600; letter-spacing:-0.01em">ProMei</span>
+      </div>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Documentação técnica</span>
+    </div>
+
+    <nav id="toc" style="display:flex; flex-direction:column; gap:2px">
+      <a href="#visao" data-nav="visao" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">01</span>Visão do produto</a>
+      <a href="#escopo" data-nav="escopo" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">02</span>Escopo e MVP</a>
+      <a href="#requisitos" data-nav="requisitos" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">03</span>Requisitos</a>
+      <a href="#regras" data-nav="regras" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">04</span>Regras de negócio</a>
+      <a href="#stakeholders" data-nav="stakeholders" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">05</span>Stakeholders</a>
+      <a href="#arquitetura" data-nav="arquitetura" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">06</span>Arquitetura</a>
+      <a href="#stack" data-nav="stack" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">07</span>Stack</a>
+      <a href="#padroes" data-nav="padroes" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">08</span>Padrões de dev</a>
+      <a href="#seguranca" data-nav="seguranca" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">09</span>Segurança e LGPD</a>
+      <a href="#ambientes" data-nav="ambientes" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">10</span>Ambientes</a>
+      <a href="#infra" data-nav="infra" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">11</span>Infra e CI/CD</a>
+      <a href="#testes" data-nav="testes" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">12</span>Testes</a>
+      <a href="#observabilidade" data-nav="observabilidade" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">13</span>Observabilidade</a>
+      <a href="#gestao" data-nav="gestao" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">14</span>Gestão do trabalho</a>
+      <a href="#golive" data-nav="golive" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">15</span>Go-live</a>
+      <a href="#adrs" data-nav="adrs" style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px; color:#98A2B3; font-size:13.5px"><span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#5A6577">ADR</span>Decisões</a>
+    </nav>
+
+    <div style="margin-top:auto; padding:14px; border:1px solid #1B212C; border-radius:10px; background:#111620; display:flex; flex-direction:column; gap:6px">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#5A6577">Fonte</span>
+      <span style="font-size:12.5px; color:#8B95A7; line-height:1.5">Consolidado de <span style="font-family:'JetBrains Mono',monospace; color:#B9C2D0">docs/*.md</span> — os arquivos originais seguem sendo a fonte de verdade.</span>
+    </div>
+  </aside>
+
+  <main style="min-width:0">
+
+    <header style="padding:88px clamp(22px,4vw,64px) 64px; border-bottom:1px solid #1B212C; background:radial-gradient(1100px 460px at 12% -30%, rgba(124,224,192,0.13), transparent 70%), #0B0D10">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:26px">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--acc,#7CE0C0)">Setup completo · v1</span>
+        <h1 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:64px; line-height:1.02; letter-spacing:-0.035em; font-weight:600">ProMei</h1>
+        <p style="margin:0; max-width:720px; font-size:19px; line-height:1.6; color:#A9B3C4; text-wrap:pretty">SaaS multi-tenant de gestão comercial para MEIs: armazém, itens e saídas de estoque com comprovante — evoluindo para NFS-e, pagamentos e gestão de funcionários. O Team ProMei opera a plataforma como Super Admin e vende assinaturas mensais e anuais.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:6px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:7px 12px; border-radius:999px; border:1px solid #232A36; background:#12161E; color:#B9C2D0">NestJS · Node 22</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:7px 12px; border-radius:999px; border:1px solid #232A36; background:#12161E; color:#B9C2D0">Next.js 15 · Tailwind</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:7px 12px; border-radius:999px; border:1px solid #232A36; background:#12161E; color:#B9C2D0">PostgreSQL 16 · Prisma</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:7px 12px; border-radius:999px; border:1px solid #232A36; background:#12161E; color:#B9C2D0">Multi-tenant · RLS</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1px; background:#1B212C; border:1px solid #1B212C; border-radius:12px; overflow:auto; margin-top:22px; max-width:820px">
+          <div style="background:#0E1116; padding:18px 20px; display:flex; flex-direction:column; gap:5px"><span style="font-family:'Space Grotesk',sans-serif; font-size:26px; color:var(--acc,#7CE0C0)">10</span><span style="font-size:12px; color:#8B95A7; line-height:1.4">empresas pagantes<br />em 3 meses</span></div>
+          <div style="background:#0E1116; padding:18px 20px; display:flex; flex-direction:column; gap:5px"><span style="font-family:'Space Grotesk',sans-serif; font-size:26px; color:var(--acc,#7CE0C0)">&gt; 80%</span><span style="font-size:12px; color:#8B95A7; line-height:1.4">retenção<br />mensal</span></div>
+          <div style="background:#0E1116; padding:18px 20px; display:flex; flex-direction:column; gap:5px"><span style="font-family:'Space Grotesk',sans-serif; font-size:26px; color:var(--acc,#7CE0C0)">&lt; 1 min</span><span style="font-size:12px; color:#8B95A7; line-height:1.4">para registrar<br />uma saída</span></div>
+          <div style="background:#0E1116; padding:18px 20px; display:flex; flex-direction:column; gap:5px"><span style="font-family:'Space Grotesk',sans-serif; font-size:26px; color:var(--acc,#7CE0C0)">&gt; 60%</span><span style="font-size:12px; color:#8B95A7; line-height:1.4">uso semanal<br />ativo</span></div>
+        </div>
+      </div>
+    </header>
+
+    <section id="visao" data-sec="visao" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">01</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Visão do produto</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:24px; display:flex; flex-direction:column; gap:14px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#FF8A8A">O problema</span>
+            <p style="margin:0; font-size:14.5px; line-height:1.65; color:#A9B3C4">MEIs controlam estoque, vendas e clientes em caderno, WhatsApp ou planilhas. Bling, Tiny e Conta Azul são caros ou superdimensionados para quem está começando.</p>
+            <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:7px; font-size:14px; line-height:1.55; color:#8B95A7">
+              <li>Sem controle do que tem, vendeu ou falta repor</li>
+              <li>Sem histórico de vendas e de clientes</li>
+              <li>Comprovantes de saída feitos à mão</li>
+              <li>Nenhuma visibilidade de faturamento</li>
+            </ul>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:24px; display:flex; flex-direction:column; gap:14px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">A solução</span>
+            <p style="margin:0; font-size:14.5px; line-height:1.65; color:#A9B3C4">Um painel web simples, por assinatura, com o mínimo que um MEI precisa para operar.</p>
+            <ul style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:7px; font-size:14px; line-height:1.55; color:#8B95A7">
+              <li>Gestão de armazém e estoque</li>
+              <li>Cadastro e consulta de itens genéricos</li>
+              <li>Saída com comprovante genérico (“nota fria”)</li>
+              <li>Gestão da própria empresa: usuários e permissões</li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:8px">
+            <span style="font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:600">Super Admin / Staff</span>
+            <span style="font-size:12px; color:#6B7688; font-family:'JetBrains Mono',monospace">Team ProMei</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#8B95A7">Gerencia empresas contratantes, planos e assinaturas.</span>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:8px">
+            <span style="font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:600">Admin</span>
+            <span style="font-size:12px; color:#6B7688; font-family:'JetBrains Mono',monospace">dono do MEI</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#8B95A7">Gerencia a própria empresa: itens, estoque, colaboradores e permissões.</span>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:8px">
+            <span style="font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:600">Colaborador</span>
+            <span style="font-size:12px; color:#6B7688; font-family:'JetBrains Mono',monospace">funcionário do MEI</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#8B95A7">Opera o dia a dia: consulta itens e registra saídas de estoque.</span>
+          </div>
+        </div>
+        <div style="border:1px dashed #232A36; border-radius:12px; padding:20px 24px; display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc2,#FFB86B)">Visão de futuro — fora do compromisso do MVP</span>
+          <span style="font-size:14px; line-height:1.6; color:#8B95A7">NFS-e com base no armazém · métodos de pagamento embutidos · gestão de funcionários (ponto, comissão) · self-service register e onboarding automático · mensageria de e-mail.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="escopo" data-sec="escopo" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23; background:#0C0F14">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">02</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Escopo e MVP</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; overflow:hidden">
+            <div style="padding:14px 20px; border-bottom:1px solid #1B212C; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">Dentro do MVP (v1)</div>
+            <div style="display:flex; flex-direction:column">
+              <div style="padding:13px 20px; border-bottom:1px solid #151A23; font-size:14px; line-height:1.55; color:#C3CBD8"><b style="color:#fff">Auth</b> — e-mail/senha, JWT access + refresh, reset feito pelo admin.</div>
+              <div style="padding:13px 20px; border-bottom:1px solid #151A23; font-size:14px; line-height:1.55; color:#C3CBD8"><b style="color:#fff">Permissionamento</b> — papéis de plataforma e de empresa, CRUD de papéis e permissões por recurso.</div>
+              <div style="padding:13px 20px; border-bottom:1px solid #151A23; font-size:14px; line-height:1.55; color:#C3CBD8"><b style="color:#fff">CRUD de empresas</b> — criação, edição, ativação/suspensão pelo Super Admin.</div>
+              <div style="padding:13px 20px; border-bottom:1px solid #151A23; font-size:14px; line-height:1.55; color:#C3CBD8"><b style="color:#fff">Planos e assinaturas</b> — mensal/anual, vínculo empresa↔plano, cobrança manual.</div>
+              <div style="padding:13px 20px; border-bottom:1px solid #151A23; font-size:14px; line-height:1.55; color:#C3CBD8"><b style="color:#fff">Itens genéricos</b> — nome, descrição, SKU, unidade, preço, estoque, categoria.</div>
+              <div style="padding:13px 20px; border-bottom:1px solid #151A23; font-size:14px; line-height:1.55; color:#C3CBD8"><b style="color:#fff">Armazém</b> — entrada, saída, ajuste manual e histórico de movimentações.</div>
+              <div style="padding:13px 20px; border-bottom:1px solid #151A23; font-size:14px; line-height:1.55; color:#C3CBD8"><b style="color:#fff">Comprovante</b> — saída gera PDF genérico, sem valor fiscal.</div>
+              <div style="padding:13px 20px; font-size:14px; line-height:1.55; color:#C3CBD8"><b style="color:#fff">Painel web</b> — Next.js + Tailwind, responsivo, dark/light.</div>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:20px">
+            <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:12px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#FF8A8A">Fora do MVP</span>
+              <div style="display:flex; flex-wrap:wrap; gap:7px">
+                <span style="font-size:12.5px; padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; text-decoration:line-through">Register self-service</span>
+                <span style="font-size:12.5px; padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; text-decoration:line-through">Mensageria de e-mail</span>
+                <span style="font-size:12.5px; padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; text-decoration:line-through">NFS-e</span>
+                <span style="font-size:12.5px; padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; text-decoration:line-through">Gateway de pagamento</span>
+                <span style="font-size:12.5px; padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; text-decoration:line-through">Gestão de funcionários</span>
+                <span style="font-size:12.5px; padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; text-decoration:line-through">App mobile</span>
+                <span style="font-size:12.5px; padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; text-decoration:line-through">Relatórios / BI</span>
+                <span style="font-size:12.5px; padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; text-decoration:line-through">Multi-idioma</span>
+              </div>
+            </div>
+            <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:12px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc2,#FFB86B)">Restrições</span>
+              <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+                <span><b style="color:#C3CBD8">Equipe</b> — 1-2 devs: simplicidade e monolito modular.</span>
+                <span><b style="color:#C3CBD8">Custo</b> — infra mínima: 1 VPS/serviço barato + Postgres.</span>
+                <span><b style="color:#C3CBD8">Prazo</b> — MVP funcional antes de qualquer feature futura.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:24px; display:flex; flex-direction:column; gap:14px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Critérios de aceite do MVP</span>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:10px 24px; font-size:14px; line-height:1.55; color:#A9B3C4">
+            <span>Super Admin cria empresa, plano e vincula assinatura</span>
+            <span>Admin loga, cadastra colaborador e define permissões</span>
+            <span>Colaborador cadastra item, registra entrada e saída</span>
+            <span>Saída gera comprovante em PDF</span>
+            <span style="color:var(--acc,#7CE0C0)">Um usuário nunca vê dados de outra empresa</span>
+            <span>Interface funciona em mobile e desktop, dark e light</span>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Backlog macro</span>
+          <div style="display:flex; flex-wrap:wrap; gap:8px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">01 Setup repo, CI, ambientes</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">02 Modelagem + migrações</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">03 Auth</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">04 Permissionamento</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">05 Empresas, planos, assinaturas</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">06 CRUD de itens</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">07 Movimentação de estoque</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">08 Comprovante PDF</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">09 UI base</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">10 Telas e dashboard</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#B9C2D0">11 Observabilidade + deploy</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="requisitos" data-sec="requisitos" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">03</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Requisitos</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">RF-AUTH · Autenticação</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-01</b> &nbsp;Login com e-mail e senha.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-02</b> &nbsp;JWT access curto + refresh, com renovação e logout.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-03</b> &nbsp;Bloqueio temporário após 5 tentativas falhas.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-04</b> &nbsp;Troca de senha pelo usuário; reset por um admin.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">RF-PERM · Permissionamento</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-10</b> &nbsp;Papéis de plataforma: Super Admin, Staff.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-11</b> &nbsp;Papéis de empresa: Admin, Colaborador.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-12</b> &nbsp;Papéis customizados com permissões <span style="font-family:'JetBrains Mono',monospace; color:var(--acc,#7CE0C0)">recurso:ação</span>.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-13</b> &nbsp;Toda rota valida permissão; toda query filtra o tenant.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">RF-EMP · Empresas e assinaturas</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-20</b> &nbsp;Super Admin cria, edita, suspende e reativa empresas.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-21</b> &nbsp;CRUD de planos com preço, periodicidade e limites.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-22</b> &nbsp;Vínculo empresa↔plano com status de assinatura.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-23</b> &nbsp;Empresa suspensa/inadimplente perde acesso ao painel.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">RF-ITEM · Itens e armazém</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-30</b> &nbsp;CRUD de itens com SKU, unidade, categoria, estoque mínimo.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-31</b> &nbsp;Consulta com busca, filtro e paginação.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-32</b> &nbsp;Entrada, saída e ajuste com quem/quando/quanto/motivo.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-33</b> &nbsp;Saída gera comprovante PDF com dados da empresa.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-34</b> &nbsp;Histórico por item e por período.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#6B7688">RF-35</b> &nbsp;Alerta visual de estoque abaixo do mínimo.</span>
+            </div>
+          </div>
+        </div>
+        <div style="border:1px solid #1B212C; border-radius:12px; overflow:auto">
+          <div style="padding:14px 20px; background:#0E1116; border-bottom:1px solid #1B212C; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Requisitos não funcionais</div>
+          <table style="width:100%; min-width:440px; border-collapse:collapse; font-size:13.5px">
+            <tbody>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; width:88px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-01</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; width:150px; color:#C3CBD8; vertical-align:top">Segurança</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Senhas com bcrypt/argon2, secrets fora do código, HTTPS obrigatório, OWASP Top 10 mitigado</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-02</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Isolamento</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Dados de uma empresa jamais acessíveis por outra: <span style="font-family:'JetBrains Mono',monospace">tenant_id</span> em toda tabela + escopo em toda query</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-03</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Performance</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">p95 &lt; 500 ms nas rotas principais com até 100 empresas ativas</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-04</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Escalabilidade</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Monolito modular stateless, escalável horizontalmente; Postgres gerenciado</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-05</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Disponibilidade</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Alvo 99,5% no MVP; health checks; restart automático</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-06</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Auditoria</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Ações críticas registradas com autor, timestamp e dados alterados</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-07</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Observabilidade</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Logs JSON com correlation id, métricas básicas, rastreamento de erros</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-08</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Privacidade</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Coleta mínima de dados pessoais; direito de exclusão (LGPD)</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-09</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Compatibilidade</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Últimas 2 versões de Chrome/Firefox/Safari/Edge; responsivo ≥ 360 px</td></tr>
+              <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-10</td><td style="padding:12px 12px; border-bottom:1px solid #151A23; color:#C3CBD8; vertical-align:top">Recuperação</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.55">Backup diário do banco; RPO 24 h; RTO 4 h no MVP</td></tr>
+              <tr><td style="padding:12px 20px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--acc,#7CE0C0); vertical-align:top">RNF-11</td><td style="padding:12px 12px; color:#C3CBD8; vertical-align:top">Usabilidade</td><td style="padding:12px 20px 12px 0; color:#8B95A7; line-height:1.55">Dark/light; saída de estoque em ≤ 3 cliques a partir do dashboard</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="regras" data-sec="regras" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23; background:#0C0F14">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">04</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Regras de negócio</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">Papéis · RN-01…05</span>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">01</b> Super Admin pode tudo; Staff gerencia empresas e assinaturas, não usuários da plataforma.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">02</b> Admin gerencia usuários, papéis, itens e estoque só da própria empresa.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">03</b> Colaborador: por padrão consulta itens e registra saídas.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">04</b> Toda empresa precisa de ≥ 1 Admin ativo; o último não pode ser removido.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">05</b> Usuário pertence a exatamente 1 empresa (Staff/Super Admin, a nenhuma).</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">Assinaturas · RN-10…15</span>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">10</b> Empresa só é criada por Super Admin/Staff.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">11</b> Cancelada é terminal: dados retidos 90 dias, depois anonimizados.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">13</b> Inadimplente: modo leitura. Suspensa/cancelada: bloqueio total.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">14</b> Exceder limite do plano bloqueia novos cadastros, não apaga existentes.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">15</b> Mudança de plano é imediata; proporcional tratado manualmente.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">Estoque · RN-20…25</span>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">20</b> SKU é único por empresa, não globalmente.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">21</b> Estoque nunca fica negativo: saída maior que o saldo é rejeitada.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">22</b> Movimentação é imutável; correção gera ajuste, nunca edição.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">23</b> Item com movimentações é inativado, nunca excluído.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#6B7688">24</b> Comprovante tem numeração sequencial por empresa e rodapé “sem valor fiscal”.</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-diagram="1" style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:26px; display:flex; flex-direction:column; gap:22px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Ciclo de vida da assinatura</span>
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap">
+            <span style="padding:10px 16px; border-radius:9px; background:#141C24; border:1px solid #26343F; font-family:'JetBrains Mono',monospace; font-size:13px; color:#9FD6FF">trial</span>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:3px; min-width:120px"><span style="font-size:10.5px; color:#5A6577">pagamento</span><div style="width:100%; height:1px; background:#2A3340; position:relative"><span style="position:absolute; right:-1px; top:-4px; color:#2A3340">▶</span></div></div>
+            <span style="padding:10px 16px; border-radius:9px; background:#122019; border:1px solid #24523E; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--acc,#7CE0C0)">ativa</span>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:3px; min-width:140px"><span style="font-size:10.5px; color:#5A6577">vencimento</span><div style="width:100%; height:1px; background:#2A3340; position:relative"><span style="position:absolute; right:-1px; top:-4px; color:#2A3340">▶</span></div><span style="font-size:10.5px; color:#5A6577">◀ regularização</span></div>
+            <span style="padding:10px 16px; border-radius:9px; background:#211B12; border:1px solid #4A3A20; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--acc2,#FFB86B)">inadimplente</span>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:3px; min-width:120px"><span style="font-size:10.5px; color:#5A6577">30 dias</span><div style="width:100%; height:1px; background:#2A3340; position:relative"><span style="position:absolute; right:-1px; top:-4px; color:#2A3340">▶</span></div></div>
+            <span style="padding:10px 16px; border-radius:9px; background:#211316; border:1px solid #4A2229; font-family:'JetBrains Mono',monospace; font-size:13px; color:#FF8A8A">cancelada</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; font-size:12.5px; color:#6B7688"><span style="font-family:'JetBrains Mono',monospace">item:</span> ativo ⇄ inativo (inativação / reativação) — nunca exclusão.</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; overflow:auto">
+            <div style="padding:14px 20px; background:#0E1116; border-bottom:1px solid #1B212C; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Tabela de decisão — acesso ao painel</div>
+            <table style="width:100%; min-width:440px; border-collapse:collapse; font-size:13.5px">
+              <thead>
+                <tr style="background:#0E1116">
+                  <th style="text-align:left; padding:10px 20px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Empresa</th>
+                  <th style="text-align:left; padding:10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Assinatura</th>
+                  <th style="text-align:center; padding:10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Login</th>
+                  <th style="text-align:center; padding:10px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Leitura</th>
+                  <th style="text-align:center; padding:10px 20px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Escrita</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:12px 20px; border-top:1px solid #151A23; color:#C3CBD8">ativa</td><td style="padding:12px 10px; border-top:1px solid #151A23; color:#8B95A7">trial / ativa</td><td style="padding:12px; border-top:1px solid #151A23; text-align:center; color:var(--acc,#7CE0C0)">●</td><td style="padding:12px; border-top:1px solid #151A23; text-align:center; color:var(--acc,#7CE0C0)">●</td><td style="padding:12px 20px; border-top:1px solid #151A23; text-align:center; color:var(--acc,#7CE0C0)">●</td></tr>
+                <tr><td style="padding:12px 20px; border-top:1px solid #151A23; color:#C3CBD8">ativa</td><td style="padding:12px 10px; border-top:1px solid #151A23; color:#8B95A7">inadimplente</td><td style="padding:12px; border-top:1px solid #151A23; text-align:center; color:var(--acc,#7CE0C0)">●</td><td style="padding:12px; border-top:1px solid #151A23; text-align:center; color:var(--acc,#7CE0C0)">●</td><td style="padding:12px 20px; border-top:1px solid #151A23; text-align:center; color:#5C2F35">✕</td></tr>
+                <tr><td style="padding:12px 20px; border-top:1px solid #151A23; color:#C3CBD8">suspensa</td><td style="padding:12px 10px; border-top:1px solid #151A23; color:#8B95A7">qualquer</td><td style="padding:12px; border-top:1px solid #151A23; text-align:center; color:#5C2F35">✕</td><td style="padding:12px; border-top:1px solid #151A23; text-align:center; color:#5C2F35">✕</td><td style="padding:12px 20px; border-top:1px solid #151A23; text-align:center; color:#5C2F35">✕</td></tr>
+                <tr><td style="padding:12px 20px; border-top:1px solid #151A23; color:#C3CBD8">cancelada</td><td style="padding:12px 10px; border-top:1px solid #151A23; color:#8B95A7">qualquer</td><td style="padding:12px; border-top:1px solid #151A23; text-align:center; color:#5C2F35">✕</td><td style="padding:12px; border-top:1px solid #151A23; text-align:center; color:#5C2F35">✕</td><td style="padding:12px 20px; border-top:1px solid #151A23; text-align:center; color:#5C2F35">✕</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div style="border:1px solid #24523E; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:8px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">Saída válida</span>
+              <span style="font-size:13.5px; line-height:1.6; color:#8B95A7"><span style="font-family:'JetBrains Mono',monospace; color:#C3CBD8">PARAF-001</span> saldo 50 → saída de 10 un, motivo “venda balcão”.</span>
+              <span style="font-size:13.5px; line-height:1.6; color:#A9B3C4">Saldo 40, movimentação registrada, comprovante nº 000123 gerado.</span>
+            </div>
+            <div style="border:1px solid #4A2229; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:8px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#FF8A8A">Saída inválida</span>
+              <span style="font-size:13.5px; line-height:1.6; color:#8B95A7"><span style="font-family:'JetBrains Mono',monospace; color:#C3CBD8">PARAF-001</span> saldo 40 → saída de 100 un.</span>
+              <span style="font-size:13.5px; line-height:1.6; color:#A9B3C4">Erro <span style="font-family:'JetBrains Mono',monospace; color:#FF8A8A">ESTOQUE_INSUFICIENTE</span>, nada é gravado.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stakeholders" data-sec="stakeholders" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">05</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Stakeholders</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; overflow:auto">
+            <div style="padding:14px 20px; background:#0E1116; border-bottom:1px solid #1B212C; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Papéis e responsabilidades</div>
+            <table style="width:100%; min-width:440px; border-collapse:collapse; font-size:13.5px">
+              <tbody>
+                <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; color:#fff; width:180px">Sponsor</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Fundadores — direção do negócio, priorização, financiamento</td></tr>
+                <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; color:#fff">Product Owner</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Backlog, critérios de aceite, validação de entregas</td></tr>
+                <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; color:#fff">Tech Lead <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--acc2,#FFB86B)">a definir</span></td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Arquitetura, padrões, revisão de código</td></tr>
+                <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; color:#fff">Desenvolvedores</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Implementação, testes, documentação</td></tr>
+                <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; color:#fff">QA</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Acumulado pelos devs no MVP</td></tr>
+                <tr><td style="padding:12px 20px; border-bottom:1px solid #151A23; color:#fff">DevOps / Infra</td><td style="padding:12px 20px 12px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Acumulado pelo Tech Lead no MVP</td></tr>
+                <tr><td style="padding:12px 20px; color:#fff">Validadores</td><td style="padding:12px 20px 12px 0; color:#8B95A7; line-height:1.5">2-3 MEIs parceiros validam fluxos reais antes do go-live</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:14px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Quem aprova o quê</span>
+            <div style="display:flex; flex-direction:column; gap:11px; font-size:13.5px">
+              <div style="display:flex; justify-content:space-between; gap:12px"><span style="color:#8B95A7">Requisitos e escopo</span><span style="color:#fff">Product Owner</span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px"><span style="color:#8B95A7">Arquitetura e stack</span><span style="color:#fff">Tech Lead <span style="font-size:11px; color:var(--acc,#7CE0C0)">(ADR)</span></span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px"><span style="color:#8B95A7">Aceite de entregas</span><span style="color:#fff">PO + validador</span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px"><span style="color:#8B95A7">Deploy em produção</span><span style="color:#fff">Tech Lead</span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px"><span style="color:#8B95A7">Resposta a incidentes</span><span style="color:#fff">Tech Lead</span></div>
+              <div style="display:flex; justify-content:space-between; gap:12px"><span style="color:#8B95A7">Preços e planos</span><span style="color:#fff">Sponsor</span></div>
+            </div>
+            <div style="margin-top:6px; padding-top:14px; border-top:1px solid #1B212C; font-size:13px; line-height:1.6; color:#6B7688">Decisão técnica relevante vira ADR · mudança de escopo atualiza o doc 02 · incidente gera post-mortem.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="arquitetura" data-sec="arquitetura" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23; background:#0C0F14">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">06</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Arquitetura</h2>
+          <p style="margin:4px 0 0; font-size:15px; color:#8B95A7">Monolito modular NestJS + painel Next.js sobre um Postgres compartilhado. Nenhuma integração externa no MVP.</p>
+        </div>
+
+        <div data-diagram="1" style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:28px; display:flex; flex-direction:column; gap:20px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">C4 nível 1 — contexto</span>
+          <div style="display:flex; align-items:stretch; gap:18px; flex-wrap:wrap">
+            <div style="display:flex; flex-direction:column; gap:10px; min-width:180px">
+              <div style="border:1px solid #26343F; border-radius:10px; background:#111823; padding:14px 16px; display:flex; flex-direction:column; gap:3px"><span style="font-size:14px; color:#fff">Super Admin / Staff</span><span style="font-size:11.5px; color:#6B7688">Team ProMei</span></div>
+              <div style="border:1px solid #26343F; border-radius:10px; background:#111823; padding:14px 16px; display:flex; flex-direction:column; gap:3px"><span style="font-size:14px; color:#fff">Admin / Colaborador</span><span style="font-size:11.5px; color:#6B7688">empresa cliente</span></div>
+            </div>
+            <div style="display:flex; align-items:center; color:#2A3340; font-family:'JetBrains Mono',monospace">──▶</div>
+            <div style="border:1px solid #24523E; border-radius:10px; background:#0F1A17; padding:16px 20px; display:flex; flex-direction:column; gap:4px; justify-content:center; min-width:170px"><span style="font-size:14.5px; color:#fff">Painel Web</span><span style="font-size:11.5px; color:var(--acc,#7CE0C0); font-family:'JetBrains Mono',monospace">Next.js 15</span></div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px"><span style="font-size:10.5px; color:#5A6577; white-space:nowrap">HTTPS · REST · JWT</span><span style="color:#2A3340; font-family:'JetBrains Mono',monospace">──▶</span></div>
+            <div style="border:1px solid #24523E; border-radius:10px; background:#0F1A17; padding:16px 20px; display:flex; flex-direction:column; gap:4px; justify-content:center; min-width:170px"><span style="font-size:14.5px; color:#fff">API</span><span style="font-size:11.5px; color:var(--acc,#7CE0C0); font-family:'JetBrains Mono',monospace">NestJS · Node 22</span></div>
+            <div style="display:flex; align-items:center; color:#2A3340; font-family:'JetBrains Mono',monospace">──▶</div>
+            <div style="display:flex; flex-direction:column; gap:10px; min-width:170px">
+              <div style="border:1px solid #2A3340; border-radius:10px; background:#12161E; padding:13px 16px; display:flex; flex-direction:column; gap:3px"><span style="font-size:14px; color:#fff">PostgreSQL 16</span><span style="font-size:11.5px; color:#6B7688">schema compartilhado</span></div>
+              <div style="border:1px solid #2A3340; border-radius:10px; background:#12161E; padding:13px 16px; display:flex; flex-direction:column; gap:3px"><span style="font-size:14px; color:#fff">Storage</span><span style="font-size:11.5px; color:#6B7688">PDFs de comprovante</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:14px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Módulos da API</span>
+            <div style="display:flex; flex-wrap:wrap; gap:8px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:7px 11px; border-radius:7px; background:#141922; color:var(--acc,#7CE0C0)">auth</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:7px 11px; border-radius:7px; background:#141922; color:var(--acc,#7CE0C0)">permissions</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:7px 11px; border-radius:7px; background:#141922; color:var(--acc,#7CE0C0)">companies</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:7px 11px; border-radius:7px; background:#141922; color:var(--acc,#7CE0C0)">users</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:7px 11px; border-radius:7px; background:#141922; color:var(--acc,#7CE0C0)">items</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:7px 11px; border-radius:7px; background:#141922; color:var(--acc,#7CE0C0)">inventory</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:7px 11px; border-radius:7px; background:#141922; color:var(--acc,#7CE0C0)">audit</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; padding:7px 11px; border-radius:7px; background:#141922; color:var(--acc,#7CE0C0)">shared</span>
+            </div>
+            <div style="margin-top:4px; padding-top:14px; border-top:1px solid #1B212C; display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+              <span><b style="color:#C3CBD8">Auth</b> — JWT access 15 min + refresh 7 dias rotacionado (hash no banco).</span>
+              <span><b style="color:#C3CBD8">Payload</b> — <span style="font-family:'JetBrains Mono',monospace">sub · company_id · roles</span>.</span>
+              <span><b style="color:#C3CBD8">Autorização</b> — guard por <span style="font-family:'JetBrains Mono',monospace">recurso:ação</span> + escopo de tenant sempre aplicado.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #24523E; border-radius:12px; background:linear-gradient(160deg,#0F1A17,#0E1116 60%); padding:22px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">Multi-tenancy</span>
+            <span style="font-size:15px; line-height:1.6; color:#C3CBD8">Banco único, schema compartilhado, coluna <span style="font-family:'JetBrains Mono',monospace; color:var(--acc,#7CE0C0)">company_id</span> em toda tabela de negócio.</span>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:4px">
+              <div style="display:flex; gap:10px; align-items:baseline"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">1</span><span style="font-size:13.5px; line-height:1.5; color:#8B95A7">O JWT carrega <span style="font-family:'JetBrains Mono',monospace">company_id</span> (null para Staff).</span></div>
+              <div style="display:flex; gap:10px; align-items:baseline"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">2</span><span style="font-size:13.5px; line-height:1.5; color:#8B95A7">Middleware Prisma injeta o tenant em toda query.</span></div>
+              <div style="display:flex; gap:10px; align-items:baseline"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">3</span><span style="font-size:13.5px; line-height:1.5; color:#8B95A7">Row-Level Security do Postgres como segunda barreira.</span></div>
+              <div style="display:flex; gap:10px; align-items:baseline"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">4</span><span style="font-size:13.5px; line-height:1.5; color:#8B95A7">Teste de isolamento cross-tenant roda em todo PR.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div data-diagram="1" style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:26px; display:flex; flex-direction:column; gap:18px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Modelo de dados</span>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px">
+            <div style="border:1px solid #24523E; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#0F1A17; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--acc,#7CE0C0)">company</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span>id · uuid</span><span>name</span><span>document</span><span>status</span></div></div>
+            <div style="border:1px solid #2A3340; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#12161E; font-family:'JetBrains Mono',monospace; font-size:12px; color:#C3CBD8">user</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span style="color:var(--acc,#7CE0C0)">company_id</span><span>email</span><span>password_hash</span><span>status</span></div></div>
+            <div style="border:1px solid #2A3340; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#12161E; font-family:'JetBrains Mono',monospace; font-size:12px; color:#C3CBD8">role</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span style="color:var(--acc,#7CE0C0)">company_id</span><span>name</span><span>is_system</span></div></div>
+            <div style="border:1px solid #2A3340; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#12161E; font-family:'JetBrains Mono',monospace; font-size:12px; color:#C3CBD8">permission</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span>resource</span><span>action</span></div></div>
+            <div style="border:1px solid #2A3340; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#12161E; font-family:'JetBrains Mono',monospace; font-size:12px; color:#C3CBD8">plan</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span>name</span><span>price</span><span>period</span><span>limits · jsonb</span></div></div>
+            <div style="border:1px solid #2A3340; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#12161E; font-family:'JetBrains Mono',monospace; font-size:12px; color:#C3CBD8">subscription</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span style="color:var(--acc,#7CE0C0)">company_id</span><span>plan_id</span><span>status</span><span>renews_at</span></div></div>
+            <div style="border:1px solid #2A3340; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#12161E; font-family:'JetBrains Mono',monospace; font-size:12px; color:#C3CBD8">item</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span style="color:var(--acc,#7CE0C0)">company_id</span><span>sku · name · unit</span><span>price · stock</span><span>min_stock · status</span></div></div>
+            <div style="border:1px solid #2A3340; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#12161E; font-family:'JetBrains Mono',monospace; font-size:12px; color:#C3CBD8">stock_movement</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span style="color:var(--acc,#7CE0C0)">company_id</span><span>item_id · user_id</span><span>type · quantity</span><span>reason · created_at</span></div></div>
+            <div style="border:1px solid #2A3340; border-radius:10px; overflow:auto"><div style="padding:9px 13px; background:#12161E; font-family:'JetBrains Mono',monospace; font-size:12px; color:#C3CBD8">receipt</div><div style="padding:11px 13px; display:flex; flex-direction:column; gap:5px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#8B95A7"><span style="color:var(--acc,#7CE0C0)">company_id</span><span>number · bigint</span><span>pdf_url</span></div></div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:16px; padding-top:14px; border-top:1px solid #1B212C; font-size:12.5px; color:#6B7688; font-family:'JetBrains Mono',monospace">
+            <span>company 1—n user · item</span><span>company 1—1 subscription</span><span>plan 1—n subscription</span><span>user n—n role n—n permission</span><span>item 1—n stock_movement</span><span>saída 1—1 receipt</span>
+          </div>
+        </div>
+
+        <div data-diagram="1" style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:26px; display:flex; flex-direction:column; gap:18px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Fluxo crítico — saída de estoque</span>
+          <div style="display:flex; flex-direction:column; gap:0">
+            <div style="display:grid; grid-template-columns:78px 1fr; gap:16px; padding-bottom:14px; border-left:1px solid #232A36; margin-left:8px; padding-left:22px; position:relative"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">Web → API</span><span style="font-size:14px; color:#C3CBD8">POST <span style="font-family:'JetBrains Mono',monospace; color:var(--acc,#7CE0C0)">/stock-movements</span> com JWT (item, qtd, motivo)</span></div>
+            <div style="display:grid; grid-template-columns:78px 1fr; gap:16px; padding-bottom:14px; border-left:1px solid #232A36; margin-left:8px; padding-left:22px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">API</span><span style="font-size:14px; color:#C3CBD8">Valida permissão e escopo de tenant</span></div>
+            <div style="display:grid; grid-template-columns:78px 1fr; gap:16px; padding-bottom:14px; border-left:1px solid #232A36; margin-left:8px; padding-left:22px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">API → DB</span><span style="font-size:14px; color:#C3CBD8"><span style="font-family:'JetBrains Mono',monospace">BEGIN; SELECT stock FOR UPDATE</span></span></div>
+            <div style="display:grid; grid-template-columns:78px 1fr; gap:16px; margin-left:8px; padding-left:22px; border-left:1px solid #232A36; padding-bottom:4px"><span></span>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px">
+                <div style="border:1px solid #24523E; border-radius:10px; background:#0F1A17; padding:16px; display:flex; flex-direction:column; gap:7px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--acc,#7CE0C0)">saldo suficiente</span><span style="font-size:13.5px; line-height:1.55; color:#A9B3C4">INSERT movement · UPDATE stock · INSERT receipt · COMMIT → gera PDF → <b style="color:#fff">201</b> com link do comprovante</span></div>
+                <div style="border:1px solid #4A2229; border-radius:10px; background:#150F11; padding:16px; display:flex; flex-direction:column; gap:7px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#FF8A8A">saldo insuficiente</span><span style="font-size:13.5px; line-height:1.55; color:#A9B3C4">ROLLBACK → <b style="color:#fff">422</b> <span style="font-family:'JetBrains Mono',monospace">ESTOQUE_INSUFICIENTE</span></span></div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:13px; line-height:1.6; color:#6B7688; padding-top:6px">Falha na geração do PDF não bloqueia a movimentação: o comprovante é gerado de forma assíncrona com retry e fica regenerável.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stack" data-sec="stack" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">07</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Stack</h2>
+          <p style="margin:4px 0 0; font-size:15px; color:#8B95A7">Critérios: equipe pequena, custo baixo, TypeScript de ponta a ponta, longevidade.</p>
+        </div>
+        <div style="border:1px solid #1B212C; border-radius:12px; overflow:auto">
+          <table style="width:100%; min-width:440px; border-collapse:collapse; font-size:13.5px">
+            <tbody>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; width:130px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Front-end</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; width:230px; color:#fff">Next.js 15 + TypeScript</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">App Router e ecossistema maduro; dispensa Vite</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Estilo</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">Tailwind + shadcn/ui</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Velocidade de UI, dark/light nativo, responsivo</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Dados</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">TanStack Query</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Cache e sincronização com a API</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Back-end</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">NestJS · Node 22 LTS</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Guards e DI ideais para permissionamento multi-tenant</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">ORM</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">Prisma</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Migrações versionadas, type-safety, middleware de tenant</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Banco</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">PostgreSQL 16</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Confiável, RLS, JSONB para limites de plano</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Arquivos</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">Disco → S3-compatível</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Cloudflare R2 / Backblaze quando necessário</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">PDF</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">pdfmake ou Puppeteer</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Avaliar na implementação dos comprovantes</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Auth</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">JWT próprio (passport-jwt)</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Controle total do permissionamento</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Cloud</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">VPS ou Railway/Render</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Hetzner/DigitalOcean — custo mínimo</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">CI/CD</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">GitHub Actions</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Padrão de mercado, grátis para o repositório</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Logs/erros</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#fff">Pino + Sentry</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7; line-height:1.5">Observabilidade barata desde o dia 1</td></tr>
+              <tr><td style="padding:13px 20px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#5A6577">Testes</td><td style="padding:13px 12px; color:#fff">Vitest/Jest · Supertest · Playwright</td><td style="padding:13px 20px 13px 0; color:#8B95A7; line-height:1.5">Unit, integração e E2E</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px">
+          <div style="border:1px solid #4A3A20; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc2,#FFB86B)">Pendência aberta</span>
+            <span style="font-size:14px; line-height:1.6; color:#A9B3C4">Definir a paleta da marca. Tokens no <span style="font-family:'JetBrains Mono',monospace">tailwind.config</span> (<span style="font-family:'JetBrains Mono',monospace">primary, secondary, surface, danger</span>) — nunca cor hardcoded em componente. Dark/light via next-themes.</span>
+          </div>
+          <div style="grid-column:span 2; border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Evitado deliberadamente</span>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:9px 20px; font-size:13.5px; line-height:1.5; color:#8B95A7">
+              <span><b style="color:#C3CBD8">Microserviços</b> — monolito modular até doer</span>
+              <span><b style="color:#C3CBD8">Kubernetes</b> — Docker + provedor simples bastam</span>
+              <span><b style="color:#C3CBD8">GraphQL</b> — REST resolve o escopo atual</span>
+              <span><b style="color:#C3CBD8">Redis / filas</b> — só com necessidade medida</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="padroes" data-sec="padroes" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23; background:#0C0F14">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">08</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Padrões de desenvolvimento</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:14px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Monorepo (pnpm workspaces)</span>
+            <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.75; color:#A9B3C4">promei/
+├── apps/
+│   ├── api/       <span style="color:#5A6577"># NestJS</span>
+│   └── web/       <span style="color:#5A6577"># Next.js</span>
+├── packages/
+│   └── shared/    <span style="color:#5A6577"># tipos, DTOs, zod</span>
+└── docs/</pre>
+            <div style="padding-top:14px; border-top:1px solid #1B212C">
+              <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.75; color:#A9B3C4">apps/api/src/
+├── modules/
+│   ├── auth/ companies/ items/
+│   └── inventory/
+│       ├── *.controller.ts
+│       ├── *.service.ts
+│       └── dto/
+├── shared/        <span style="color:#5A6577"># guards, tenant</span>
+└── main.ts</pre>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:20px">
+            <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Nomenclatura</span>
+              <div style="display:grid; grid-template-columns:auto 1fr; gap:8px 16px; font-size:13.5px; color:#8B95A7">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--acc,#7CE0C0)">kebab-case</span><span>arquivos · rotas REST no plural (<span style="font-family:'JetBrains Mono',monospace">/stock-movements</span>)</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--acc,#7CE0C0)">PascalCase</span><span>classes</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--acc,#7CE0C0)">camelCase</span><span>variáveis e funções</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--acc,#7CE0C0)">snake_case</span><span>tabelas no plural e colunas</span>
+              </div>
+              <span style="font-size:13.5px; color:#8B95A7; padding-top:8px; border-top:1px solid #1B212C">Código em <b style="color:#C3CBD8">inglês</b>; UI e docs em <b style="color:#C3CBD8">pt-BR</b>.</span>
+            </div>
+            <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">API e erros</span>
+              <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+                <span>REST versionada por prefixo <span style="font-family:'JetBrains Mono',monospace; color:var(--acc,#7CE0C0)">/api/v1/…</span>, paginação <span style="font-family:'JetBrains Mono',monospace">?page=&amp;limit=</span> (máx. 100).</span>
+                <span>Validação zod/class-validator em todo endpoint — nunca confiar no front.</span>
+                <span>Erro padronizado: <span style="font-family:'JetBrains Mono',monospace; color:#C3CBD8">{ statusCode, code, message, correlationId }</span> com códigos de negócio.</span>
+                <span>Nunca vazar stack trace ou SQL; todo 5xx vai ao Sentry com correlation id.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Git</span>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.5; color:#8B95A7">
+              <span><span style="font-family:'JetBrains Mono',monospace; color:#C3CBD8">main</span> ← <span style="font-family:'JetBrains Mono',monospace">feat/ fix/ chore/</span></span>
+              <span>Conventional Commits</span>
+              <span>PR obrigatório: CI verde + 1 review</span>
+              <span>Squash merge</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Migrações e config</span>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.5; color:#8B95A7">
+              <span>Somente Prisma Migrate, versionadas</span>
+              <span>Migração destrutiva exige rollback no PR</span>
+              <span>Nunca editar migração já aplicada</span>
+              <span>Config por env validada no boot (zod)</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Qualidade</span>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.5; color:#8B95A7">
+              <span>ESLint + Prettier bloqueiam o CI</span>
+              <span>TypeScript <span style="font-family:'JetBrains Mono',monospace">strict: true</span></span>
+              <span>Services de negócio com testes unitários</span>
+              <span><span style="font-family:'JetBrains Mono',monospace">.env.example</span> versionado, <span style="font-family:'JetBrains Mono',monospace">.env</span> nunca</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="seguranca" data-sec="seguranca" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">09</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Segurança e privacidade</h2>
+        </div>
+        <div style="border:1px solid #4A2229; border-radius:12px; background:linear-gradient(160deg,#150F11,#0E1116 60%); padding:24px; display:flex; flex-direction:column; gap:12px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#FF8A8A">Risco nº 1 — isolamento multi-tenant</span>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px">
+            <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; font-size:13px; line-height:1.5; color:#A9B3C4"><span style="font-family:'JetBrains Mono',monospace">company_id</span> obrigatório em toda tabela de negócio</div>
+            <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; font-size:13px; line-height:1.5; color:#A9B3C4">Middleware Prisma injeta o tenant — nenhuma query sem escopo</div>
+            <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; font-size:13px; line-height:1.5; color:#A9B3C4">Row-Level Security do Postgres como segunda barreira</div>
+            <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; font-size:13px; line-height:1.5; color:#A9B3C4">Teste cross-tenant no CI: empresa A → recurso de B = <span style="font-family:'JetBrains Mono',monospace">404</span></div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Auth</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+              <span>Senhas em argon2id (fallback bcrypt cost ≥ 12).</span>
+              <span>JWT access 15 min + refresh 7 dias rotacionado, com hash no banco e revogável.</span>
+              <span>Bloqueio progressivo + rate limit no login.</span>
+              <span>Autorização dupla: permissão <b style="color:#C3CBD8">e</b> escopo de tenant em toda rota.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Proteções da aplicação</span>
+            <div style="display:grid; grid-template-columns:auto 1fr; gap:8px 14px; font-size:13px; line-height:1.5; color:#8B95A7">
+              <span style="color:#C3CBD8">Injeção</span><span>ORM parametrizado + validação zod</span>
+              <span style="color:#C3CBD8">XSS</span><span>Escape do React, sanitização, CSP</span>
+              <span style="color:#C3CBD8">CSRF</span><span>JWT em header, não cookie</span>
+              <span style="color:#C3CBD8">Rate limit</span><span>Global por IP, estrito em <span style="font-family:'JetBrains Mono',monospace">/auth/*</span></span>
+              <span style="color:#C3CBD8">Headers</span><span>helmet: HSTS, CSP, X-Frame-Options</span>
+              <span style="color:#C3CBD8">Deps</span><span>Dependabot + <span style="font-family:'JetBrains Mono',monospace">pnpm audit</span> no CI</span>
+              <span style="color:#C3CBD8">Cripto</span><span>TLS 1.2+; disco do banco criptografado</span>
+            </div>
+          </div>
+        </div>
+        <div style="border:1px solid #1B212C; border-radius:12px; overflow:auto">
+          <div style="padding:14px 20px; background:#0E1116; border-bottom:1px solid #1B212C; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Threat model</div>
+          <table style="width:100%; min-width:440px; border-collapse:collapse; font-size:13.5px">
+            <tbody>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; width:230px; color:#fff">Vazamento cross-tenant</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; width:240px; color:#8B95A7">Query sem escopo</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#A9B3C4">Middleware + RLS + teste automatizado</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; color:#fff">Tomada de conta</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#8B95A7">Credential stuffing</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#A9B3C4">Rate limit, bloqueio progressivo, argon2</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; color:#fff">Escalada de privilégio</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#8B95A7">Payload de papel manipulado</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#A9B3C4">Validação server-side; papéis de sistema imutáveis</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; color:#fff">Abuso de Super Admin</td><td style="padding:13px 12px; border-bottom:1px solid #151A23; color:#8B95A7">Credencial de staff comprometida</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#A9B3C4">MFA para staff (pós-MVP) + auditoria total</td></tr>
+              <tr><td style="padding:13px 20px; color:#fff">Fraude em comprovante</td><td style="padding:13px 12px; color:#8B95A7">Alteração de movimentação</td><td style="padding:13px 20px 13px 0; color:#A9B3C4">Movimentações imutáveis (RN-22) + numeração sequencial</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">LGPD</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+              <span>Coleta mínima: nome, e-mail e documento da empresa. Base legal: execução de contrato.</span>
+              <span>Exportação e exclusão sob demanda — processo manual documentado no MVP.</span>
+              <span>Empresa cancelada: dados retidos 90 dias, depois anonimizados.</span>
+              <span>Backup criptografado com retenção de 30 dias.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:14px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Resposta a incidentes</span>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:13px">
+              <span style="padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#C3CBD8">1 Detectar</span><span style="color:#3A4453">→</span>
+              <span style="padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#C3CBD8">2 Conter</span><span style="color:#3A4453">→</span>
+              <span style="padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#C3CBD8">3 Corrigir</span><span style="color:#3A4453">→</span>
+              <span style="padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#C3CBD8">4 Comunicar</span><span style="color:#3A4453">→</span>
+              <span style="padding:8px 12px; border-radius:8px; border:1px solid #232A36; color:#C3CBD8">5 Post-mortem</span>
+            </div>
+            <span style="font-size:13px; line-height:1.6; color:#6B7688">Havendo dados pessoais, avaliar notificação à ANPD. Auditoria em <span style="font-family:'JetBrains Mono',monospace">audit_logs</span> (append-only): autor, empresa, ação, recurso, diff, IP, timestamp.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ambientes" data-sec="ambientes" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23; background:#0C0F14">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">10</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Ambientes</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:600">Local</span>
+            <span style="font-size:13px; color:#6B7688; font-family:'JetBrains Mono',monospace">docker compose</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#8B95A7">api + web + postgres com seed sintético. <span style="font-family:'JetBrains Mono',monospace; color:#C3CBD8">pnpm dev</span> sobe tudo em um comando.</span>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:600">Staging</span>
+            <span style="font-size:13px; color:#6B7688; font-family:'JetBrains Mono',monospace">deploy automático de main</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#8B95A7">Mesma infra de produção, menor. Seed + dados de teste — <b style="color:#FF8A8A">nunca</b> dados reais.</span>
+          </div>
+          <div style="border:1px solid #24523E; border-radius:12px; background:#0F1A17; padding:22px; display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:600">Produção</span>
+            <span style="font-size:13px; color:var(--acc,#7CE0C0); font-family:'JetBrains Mono',monospace">tag + aprovação manual</span>
+            <span style="font-size:13.5px; line-height:1.55; color:#A9B3C4">VPS/PaaS + Postgres gerenciado. Dados reais com backup diário.</span>
+          </div>
+        </div>
+        <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Princípios</span>
+          <span style="font-size:14px; line-height:1.65; color:#8B95A7">Paridade total de versões de Node e Postgres entre ambientes — o compose local espelha produção. Configuração 100% por variável de ambiente, validada no boot. Futuro: preview por pull request e sandbox de integrações quando entrarem pagamento e NFS-e.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="infra" data-sec="infra" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">11</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Infraestrutura e CI/CD</h2>
+        </div>
+        <div data-diagram="1" style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:26px; display:flex; flex-direction:column; gap:18px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Pipeline — GitHub Actions</span>
+          <div style="display:flex; flex-direction:column; gap:14px">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577; width:96px">PR aberto</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#141922; border:1px solid #232A36; color:#C3CBD8">lint + typecheck</span><span style="color:#3A4453">→</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#141922; border:1px solid #232A36; color:#C3CBD8">testes unit + integração</span><span style="color:#3A4453">→</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#141922; border:1px solid #232A36; color:#C3CBD8">audit de dependências</span><span style="color:#3A4453">→</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#141922; border:1px solid #232A36; color:#C3CBD8">build</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577; width:96px">merge main</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#141922; border:1px solid #232A36; color:#C3CBD8">imagens Docker</span><span style="color:#3A4453">→</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#141922; border:1px solid #232A36; color:#C3CBD8">deploy staging</span><span style="color:#3A4453">→</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#141922; border:1px solid #232A36; color:#C3CBD8">smoke test</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--acc,#7CE0C0); width:96px">tag v*</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#0F1A17; border:1px solid #24523E; color:var(--acc,#7CE0C0)">deploy produção (aprovação)</span><span style="color:#3A4453">→</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#0F1A17; border:1px solid #24523E; color:var(--acc,#7CE0C0)">migração</span><span style="color:#3A4453">→</span>
+              <span style="font-size:12.5px; padding:8px 12px; border-radius:8px; background:#0F1A17; border:1px solid #24523E; color:var(--acc,#7CE0C0)">smoke test</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #4A2229; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#FF8A8A">Gates que bloqueiam merge/deploy</span>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.5; color:#8B95A7">
+              <span>Lint ou typecheck falhando</span>
+              <span>Qualquer teste falhando — incluindo isolamento cross-tenant</span>
+              <span>Vulnerabilidade crítica em dependência</span>
+              <span>Migração destrutiva sem rollback documentado</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Deploy e Docker</span>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+              <span>Dockerfile multi-stage por app (build → runtime slim); imagens versionadas por SHA + tag.</span>
+              <span>Rolling simples: réplica antiga só para depois de a nova ficar healthy.</span>
+              <span>Migrações expand/contract, compatíveis com a versão anterior.</span>
+              <span>Rollback = redeploy da imagem anterior.</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Health checks</span>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:13.5px; color:#8B95A7">
+              <span><span style="font-family:'JetBrains Mono',monospace; color:var(--acc,#7CE0C0)">GET /health</span> — liveness</span>
+              <span><span style="font-family:'JetBrains Mono',monospace; color:var(--acc,#7CE0C0)">GET /health/ready</span> — banco acessível e migrações aplicadas</span>
+              <span>Provedor reinicia container unhealthy</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Backup e desastre</span>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:13.5px; line-height:1.5; color:#8B95A7">
+              <span>Backup diário automático, retenção 30 dias</span>
+              <span>Teste de restauração trimestral, com resultado registrado</span>
+              <span>RPO 24 h · RTO 4 h no MVP</span>
+              <span>PDFs são regeneráveis — não são fonte de verdade</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="testes" data-sec="testes" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23; background:#0C0F14">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">12</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Estratégia de testes</h2>
+        </div>
+        <div style="border:1px solid #1B212C; border-radius:12px; overflow:auto">
+          <table style="width:100%; min-width:440px; border-collapse:collapse; font-size:13.5px">
+            <thead><tr style="background:#0E1116">
+              <th style="text-align:left; padding:12px 20px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Nível</th>
+              <th style="text-align:left; padding:12px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Ferramenta</th>
+              <th style="text-align:left; padding:12px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Escopo</th>
+              <th style="text-align:left; padding:12px 20px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#5A6577; font-weight:500">Quando</th>
+            </tr></thead>
+            <tbody>
+              <tr><td style="padding:13px 20px; border-top:1px solid #151A23; color:#fff">Unitário</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">Vitest/Jest</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">Services de negócio (RN-*), validadores</td><td style="padding:13px 20px; border-top:1px solid #151A23; color:#C3CBD8">Todo PR</td></tr>
+              <tr><td style="padding:13px 20px; border-top:1px solid #151A23; color:#fff">Integração</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">Supertest + testcontainers</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">Endpoints com banco real</td><td style="padding:13px 20px; border-top:1px solid #151A23; color:#C3CBD8">Todo PR</td></tr>
+              <tr><td style="padding:13px 20px; border-top:1px solid #151A23; color:#fff">E2E</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">Playwright</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">Fluxos críticos no navegador</td><td style="padding:13px 20px; border-top:1px solid #151A23; color:#C3CBD8">main e pré-release</td></tr>
+              <tr><td style="padding:13px 20px; border-top:1px solid #151A23; color:#fff">Segurança</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">pnpm audit + isolamento</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">Dependências e multi-tenancy</td><td style="padding:13px 20px; border-top:1px solid #151A23; color:#C3CBD8">Todo PR</td></tr>
+              <tr><td style="padding:13px 20px; border-top:1px solid #151A23; color:#fff">Performance</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">k6 básico</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">p95 das rotas principais</td><td style="padding:13px 20px; border-top:1px solid #151A23; color:#C3CBD8">Pré-release</td></tr>
+              <tr><td style="padding:13px 20px; border-top:1px solid #151A23; color:#fff">Manual</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">MEIs beta</td><td style="padding:13px 12px; border-top:1px solid #151A23; color:#8B95A7">Fluxos reais de negócio</td><td style="padding:13px 20px; border-top:1px solid #151A23; color:#C3CBD8">Antes do go-live</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Fluxos com E2E obrigatório</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">1</b> &nbsp;Login → dashboard</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">2</b> &nbsp;Super Admin cria empresa + assinatura → Admin loga</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">3</b> &nbsp;Item → entrada → saída → comprovante PDF</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">4</b> &nbsp;Colaborador sem permissão é bloqueado</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">5</b> &nbsp;Usuário da empresa A não acessa dados da empresa B</span>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div style="border:1px solid #24523E; border-radius:12px; background:#0F1A17; padding:20px; display:flex; flex-direction:column; gap:9px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc,#7CE0C0)">Testes que valem ouro</span>
+              <span style="font-size:13.5px; line-height:1.55; color:#A9B3C4">Isolamento cross-tenant em todo PR — inegociável · estoque nunca negativo sob concorrência · tabela de decisão de acesso coberta por integração.</span>
+            </div>
+            <div style="border:1px solid #4A2229; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:9px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#FF8A8A">Bloqueia a entrega</span>
+              <span style="font-size:13.5px; line-height:1.55; color:#8B95A7">Build/teste falhando · vulnerabilidade crítica · fluxo crítico reprovado · migração não validada em staging · rollback não documentado.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="observabilidade" data-sec="observabilidade" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">13</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Observabilidade</h2>
+          <p style="margin:4px 0 0; font-size:15px; color:#8B95A7">A aplicação em produção deve conseguir explicar o que aconteceu.</p>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Logs</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+              <span>JSON estruturado (Pino), níveis info/warn/error.</span>
+              <span>Todo request recebe <span style="font-family:'JetBrains Mono',monospace; color:var(--acc,#7CE0C0)">correlation_id</span>, propagado do web à API e devolvido em erros.</span>
+              <span>Campos padrão: correlation_id, company_id, user_id, rota, status, duração.</span>
+              <span><b style="color:#FF8A8A">Nunca</b> logar senha, token ou dado pessoal sensível.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Erros e auditoria</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+              <span>Sentry em API e Web, com release e correlation id.</span>
+              <span>Todo 5xx vai ao Sentry; 4xx de negócio não — são esperados.</span>
+              <span><span style="font-family:'JetBrains Mono',monospace">audit_logs</span> append-only responde “quem fez o quê, quando, em qual empresa”.</span>
+              <span>Dashboards Grafana/Prometheus ficam para a fase 2.</span>
+            </div>
+          </div>
+        </div>
+        <div style="border:1px solid #1B212C; border-radius:12px; overflow:auto">
+          <div style="padding:14px 20px; background:#0E1116; border-bottom:1px solid #1B212C; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Alertas mínimos do MVP</div>
+          <table style="width:100%; min-width:440px; border-collapse:collapse; font-size:13.5px">
+            <tbody>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; width:320px; color:#fff">Uptime (<span style="font-family:'JetBrains Mono',monospace">/health</span>)</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7">Down &gt; 2 min</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; color:#fff">Taxa de erro 5xx</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7">&gt; 1% em 5 min</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; color:#fff">Latência p95</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7">&gt; 1 s sustentado</td></tr>
+              <tr><td style="padding:13px 20px; border-bottom:1px solid #151A23; color:#fff">Erros novos no Sentry</td><td style="padding:13px 20px 13px 0; border-bottom:1px solid #151A23; color:#8B95A7">Primeiro evento de um erro novo</td></tr>
+              <tr><td style="padding:13px 20px; color:#fff">Backup diário</td><td style="padding:13px 20px 13px 0; color:#8B95A7">Falhou</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="gestao" data-sec="gestao" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23; background:#0C0F14">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">14</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Gestão do trabalho</h2>
+          <p style="margin:4px 0 0; font-size:15px; color:#8B95A7">Épico → História → Task, em GitHub Projects ou ClickUp. Bugs à parte, com prioridade própria.</p>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px">
+          <div style="border:1px solid #24523E; border-radius:10px; background:#0F1A17; padding:14px; display:flex; flex-direction:column; gap:6px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--acc,#7CE0C0)">E1</span><span style="font-size:13px; color:#C3CBD8; line-height:1.4">Fundação</span></div>
+          <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; display:flex; flex-direction:column; gap:6px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">E2</span><span style="font-size:13px; color:#C3CBD8; line-height:1.4">Auth e permissões</span></div>
+          <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; display:flex; flex-direction:column; gap:6px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">E3</span><span style="font-size:13px; color:#C3CBD8; line-height:1.4">Empresas e planos</span></div>
+          <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; display:flex; flex-direction:column; gap:6px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">E4</span><span style="font-size:13px; color:#C3CBD8; line-height:1.4">Itens e armazém</span></div>
+          <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; display:flex; flex-direction:column; gap:6px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">E5</span><span style="font-size:13px; color:#C3CBD8; line-height:1.4">Comprovante</span></div>
+          <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; display:flex; flex-direction:column; gap:6px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">E6</span><span style="font-size:13px; color:#C3CBD8; line-height:1.4">UI base</span></div>
+          <div style="border:1px solid #1B212C; border-radius:10px; background:#0E1116; padding:14px; display:flex; flex-direction:column; gap:6px"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">E7</span><span style="font-size:13px; color:#C3CBD8; line-height:1.4">Observabilidade e go-live</span></div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Template de task</span>
+            <pre style="margin:0; font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.8; color:#8B95A7">## Contexto        <span style="color:#5A6577">a que história pertence</span>
+## Problema        <span style="color:#5A6577">o que resolver</span>
+## Resultado       <span style="color:#5A6577">comportamento observável</span>
+## Regras          <span style="color:#5A6577">RN-* e RF-* envolvidas</span>
+## Módulos         <span style="color:#5A6577">arquivos afetados</span>
+## Critérios       <span style="color:#5A6577">checklist de aceite</span>
+## Riscos          <span style="color:#5A6577">o que pode quebrar</span>
+## Como validar    <span style="color:#5A6577">manual + automatizado</span></pre>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:16px">
+            <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:9px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Definition of Ready</span>
+              <span style="font-size:13.5px; line-height:1.55; color:#8B95A7">Problema claro · critérios de aceite · regras mapeadas · dependências resolvidas.</span>
+            </div>
+            <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:9px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Definition of Done</span>
+              <span style="font-size:13.5px; line-height:1.55; color:#8B95A7">Código com testes · CI verde · review aprovado · documentação atualizada · validado em staging.</span>
+            </div>
+            <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:20px; display:flex; flex-direction:column; gap:10px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Prioridade</span>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; font-size:12.5px">
+                <span style="padding:6px 10px; border-radius:7px; background:#211316; color:#FF8A8A; font-family:'JetBrains Mono',monospace">P0 bloqueia MVP</span>
+                <span style="padding:6px 10px; border-radius:7px; background:#211B12; color:var(--acc2,#FFB86B); font-family:'JetBrains Mono',monospace">P1 MVP</span>
+                <span style="padding:6px 10px; border-radius:7px; background:#141922; color:#8B95A7; font-family:'JetBrains Mono',monospace">P2 pós-MVP</span>
+                <span style="padding:6px 10px; border-radius:7px; background:#141922; color:#6B7688; font-family:'JetBrains Mono',monospace">P3 ideia</span>
+              </div>
+              <span style="font-size:13px; color:#6B7688">Bug em produção afetando cliente pagante = P0.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="golive" data-sec="golive" style="padding:64px clamp(22px,4vw,64px); border-bottom:1px solid #151A23">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">15</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Go-live</h2>
+        </div>
+        <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:24px; display:flex; flex-direction:column; gap:14px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Checklist de produção</span>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:11px 28px; font-size:13.5px; line-height:1.5; color:#A9B3C4">
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Gates de teste passando</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Teste de isolamento cross-tenant verde</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Fluxos críticos E2E verdes em staging</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Backup configurado e restauração testada</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Rollback documentado e ensaiado</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Health checks e alertas ativos</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Sentry recebendo eventos de staging</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Secrets de produção fora do código</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>HTTPS e headers de segurança verificados</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Rate limiting ativo em <span style="font-family:'JetBrains Mono',monospace">/auth/*</span></span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Seed: planos + Super Admin com senha forte</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>Termos de uso e política de privacidade</span>
+            <span style="display:flex; gap:10px"><span style="width:14px; height:14px; margin-top:2px; border:1px solid #2A3340; border-radius:4px; flex:none"></span>2-3 MEIs beta validaram os fluxos</span>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:22px; display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#6B7688">Dia do go-live</span>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">1</b> &nbsp;Deploy via tag de release, com aprovação manual.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">2</b> &nbsp;Migrações aplicadas e verificadas.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">3</b> &nbsp;Teste de fumaça de 10 min: login super admin → empresa teste → login admin → item → entrada → saída → PDF → auditoria → excluir empresa teste.</span>
+              <span><b style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">4</b> &nbsp;Monitorar Sentry e métricas por 2 h.</span>
+            </div>
+            <div style="margin-top:4px; padding-top:14px; border-top:1px solid #1B212C; font-size:13px; line-height:1.6; color:#6B7688">Sem migração legada — projeto novo. Para os beta, importação de itens via CSV assistida manualmente. Plantão da semana de lançamento: Tech Lead; suporte beta por WhatsApp.</div>
+          </div>
+          <div style="border:1px solid #4A2229; border-radius:12px; background:linear-gradient(160deg,#150F11,#0E1116 60%); padding:22px; display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:#FF8A8A">Rollback imediato se…</span>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px; line-height:1.55; color:#A9B3C4">
+              <span>Smoke test falhou em qualquer passo.</span>
+              <span>Taxa de 5xx &gt; 1% ou health check instável.</span>
+              <span>Qualquer indício de vazamento cross-tenant — interrupção e investigação obrigatórias.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="adrs" data-sec="adrs" style="padding:64px clamp(22px,4vw,64px) 110px; background:#0C0F14">
+      <div style="max-width:var(--read,1080px); display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.18em; color:var(--acc,#7CE0C0)">ADR</span>
+          <h2 style="margin:0; font-family:'Space Grotesk',sans-serif; font-size:36px; letter-spacing:-0.025em; font-weight:600">Decisões de arquitetura</h2>
+          <p style="margin:4px 0 0; font-size:15px; color:#8B95A7">Três decisões aceitas em 01/08/2026. Novas decisões relevantes entram como ADR em <span style="font-family:'JetBrains Mono',monospace">docs/adr/</span>.</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:16px">
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:24px">
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">ADR-0001</span>
+              <span style="font-family:'Space Grotesk',sans-serif; font-size:19px; font-weight:600; line-height:1.25">NestJS no back-end</span>
+              <span style="width:fit-content; font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:6px; background:#0F1A17; color:var(--acc,#7CE0C0); border:1px solid #24523E">aceita</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.6; color:#8B95A7">
+              <span><b style="color:#C3CBD8">Contexto</b> — precisamos de auth, permissionamento granular multi-tenant e estrutura que suporte crescimento. Opções: NestJS, Fastify puro, Express.</span>
+              <span><b style="color:#C3CBD8">Decisão</b> — NestJS com adapter Fastify. Guards e interceptors nativos casam com o requisito central de permissão e escopo de tenant; estrutura opinada reduz decisões ad-hoc; DI facilita testes.</span>
+              <span><b style="color:#C3CBD8">Consequência</b> — mais boilerplate e curva maior que Express; mitigado seguindo os módulos definidos na arquitetura.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1B212C; border-radius:12px; background:#0E1116; padding:24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:24px">
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">ADR-0002</span>
+              <span style="font-family:'Space Grotesk',sans-serif; font-size:19px; font-weight:600; line-height:1.25">Next.js no front-end</span>
+              <span style="width:fit-content; font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:6px; background:#0F1A17; color:var(--acc,#7CE0C0); border:1px solid #24523E">aceita</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.6; color:#8B95A7">
+              <span><b style="color:#C3CBD8">Contexto</b> — a ideia inicial listava “Next + Vite”, alternativas concorrentes: Next tem bundler próprio; Vite serviria a uma SPA pura.</span>
+              <span><b style="color:#C3CBD8">Decisão</b> — Next.js 15 (App Router) + TypeScript + Tailwind. Vite descartado: um framework cobre roteamento, build, otimizações e futura landing page com SEO.</span>
+              <span><b style="color:#C3CBD8">Consequência</b> — deploy exige runtime Node, aceitável já que teremos infra para a API.</span>
+            </div>
+          </div>
+          <div style="border:1px solid #24523E; border-radius:12px; background:linear-gradient(160deg,#0F1A17,#0E1116 55%); padding:24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:24px">
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#5A6577">ADR-0003</span>
+              <span style="font-family:'Space Grotesk',sans-serif; font-size:19px; font-weight:600; line-height:1.25">Multi-tenancy com <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:var(--acc,#7CE0C0)">company_id</span></span>
+              <span style="width:fit-content; font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:6px; background:#0F1A17; color:var(--acc,#7CE0C0); border:1px solid #24523E">aceita</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.6; color:#A9B3C4">
+              <span><b style="color:#fff">Contexto</b> — opções: banco por tenant, schema por tenant ou schema compartilhado com coluna discriminadora.</span>
+              <span><b style="color:#fff">Decisão</b> — banco único, schema compartilhado, <span style="font-family:'JetBrains Mono',monospace">company_id</span> em toda tabela de negócio, com RLS do Postgres como segunda barreira. Centenas de MEIs pequenos tornariam banco/schema por tenant caro em migrações, backups e conexões.</span>
+              <span><b style="color:#fff">Consequência</b> — isolamento é lógico, não físico: teste automatizado cross-tenant é obrigatório no CI. Cliente enterprise que exija isolamento físico obriga a revisitar esta ADR.</span>
+            </div>
+          </div>
+        </div>
+        <div style="border:1px dashed #232A36; border-radius:12px; padding:22px 24px; display:flex; flex-direction:column; gap:12px; margin-top:6px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--acc2,#FFB86B)">Próximos passos</span>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; font-size:13.5px; line-height:1.55; color:#8B95A7">
+            <span><b style="color:#C3CBD8">1</b> Validar visão e escopo com os fundadores.</span>
+            <span><b style="color:#C3CBD8">2</b> Definir a paleta da marca (pendência do doc de stack).</span>
+            <span><b style="color:#C3CBD8">3</b> Criar o monorepo seguindo os padrões de desenvolvimento.</span>
+            <span><b style="color:#C3CBD8">4</b> Iniciar o Épico 1 — Fundação.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#7CE0C0&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#7CE0C0&quot;,&quot;#8AB4F8&quot;,&quot;#FFB86B&quot;,&quot;#C7A0FF&quot;],&quot;section&quot;:&quot;Aparência&quot;},&quot;readingWidth&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1080,&quot;min&quot;:900,&quot;max&quot;:1440,&quot;step&quot;:20,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Aparência&quot;},&quot;showDiagrams&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Conteúdo&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() {
+    this.applyTweaks();
+    const root = document.querySelector('[data-sec]')?.closest('main');
+    const links = Array.from(document.querySelectorAll('[data-nav]'));
+    const secs = Array.from(document.querySelectorAll('[data-sec]'));
+    const paint = (id) => {
+      links.forEach(a => {
+        const on = a.getAttribute('data-nav') === id;
+        a.style.background = on ? '#141C22' : 'transparent';
+        a.style.color = on ? '#fff' : '#98A2B3';
+        a.style.boxShadow = on ? 'inset 2px 0 0 var(--acc, #7CE0C0)' : 'none';
+      });
+    };
+    this._io = new IntersectionObserver((entries) => {
+      const vis = entries.filter(e => e.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (vis) paint(vis.target.getAttribute('data-sec'));
+    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+    secs.forEach(s => this._io.observe(s));
+    if (root) void root;
+  }
+  componentDidUpdate() { this.applyTweaks(); }
+  componentWillUnmount() { if (this._io) this._io.disconnect(); }
+  applyTweaks() {
+    const s = document.documentElement.style;
+    s.setProperty('--acc', this.props.accentColor || '#7CE0C0');
+    s.setProperty('--read', (this.props.readingWidth || 1080) + 'px');
+    const show = this.props.showDiagrams !== false;
+    document.querySelectorAll('[data-diagram]').forEach(el => { el.style.display = show ? 'flex' : 'none'; });
+  }
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

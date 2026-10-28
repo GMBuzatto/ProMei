@@ -1,0 +1,58 @@
+# Ambiente de desenvolvimento local.
+#   docker compose up -d db      sobe so o Postgres (uso do dia a dia com `pnpm start:dev`)
+#   docker compose up -d         sobe Postgres + API buildada (paridade com producao, docs/10)
+#   docker compose down          para (mantem os dados)
+#   docker compose down -v       para e APAGA os dados
+# Nome do projeto Compose. Sem esta linha o Compose usa o nome da PASTA
+# (ProMei-BE), e o stack aparece como "promei-be" no Docker Desktop mesmo com
+# todos os containers ja renomeados — foi o que sobrou do rebrand (ADR-0007).
+# Declarado aqui, o nome para de depender de como a pasta foi clonada.
+name: promei
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: promei-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Sobrescreve o DATABASE_URL do .env (que aponta pro host local): dentro
+      # da rede do compose o Postgres e alcancado pelo nome do servico `db`.
+      DATABASE_URL: postgresql://promei:promei@db:5432/promei?schema=public
+      # Este servico testa a imagem de producao (paridade, docs/10) — nao usa
+      # o NODE_ENV=development do .env de dev (que pediria pino-pretty, uma
+      # devDependency ausente na imagem de runtime).
+      NODE_ENV: production
+    ports:
+      - '3001:3001'
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    container_name: promei-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: promei
+      POSTGRES_PASSWORD: promei
+      POSTGRES_DB: promei
+    ports:
+      # Porta alta no host para nao disputar com instalacoes nativas do Postgres,
+      # que costumam ocupar 5432 e 5433. Dentro do container a porta segue 5432.
+      - '55432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U promei -d promei']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  postgres-data:
+    name: promei-postgres-data

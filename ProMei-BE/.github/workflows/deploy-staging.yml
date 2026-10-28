@@ -1,0 +1,60 @@
+name: Deploy Staging
+
+# docs/11-infra-ci-cd.md: merge em `staging` -> build imagem -> deploy staging -> smoke test.
+# Migracao roda antes do deploy (expand/contract: precisa ser compativel com a
+# versao anterior, que ainda estara servindo trafego ate o switch concluir).
+on:
+  push:
+    branches: [staging]
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  deploy:
+    name: migrate-and-deploy
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Migracao Prisma (antes do switch)
+        run: pnpm db:migrate:deploy
+        env:
+          # DATABASE_URL publica (TCP proxy do Railway) — o runner do GitHub
+          # Actions esta fora da rede privada do Railway.
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Instalar Railway CLI
+        run: pnpm add -g @railway/cli
+
+      - name: Deploy no Railway
+        run: railway up --service "$RAILWAY_SERVICE_ID" --environment staging --ci
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
+
+      - name: Liveness pos-deploy
+        uses: ./.github/actions/smoke-test
+        with:
+          url: ${{ vars.SERVICE_URL }}${{ vars.API_PREFIX }}/health/ready
+
+      - name: Smoke de fluxo (roteiro do docs/15)
+        run: bash scripts/smoke-test.sh
+        env:
+          BASE_URL: ${{ vars.SERVICE_URL }}${{ vars.API_PREFIX }}
+          SMOKE_ADMIN_EMAIL: ${{ vars.SMOKE_ADMIN_EMAIL }}
+          SMOKE_ADMIN_PASSWORD: ${{ secrets.SMOKE_ADMIN_PASSWORD }}

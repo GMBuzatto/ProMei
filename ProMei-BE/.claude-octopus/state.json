@@ -1,0 +1,82 @@
+{
+  "version": "1.0.0",
+  "project_id": "5fc810cf62601df84b7923b9964c53e6",
+  "current_workflow": null,
+  "current_phase": null,
+  "session_start": "2026-06-10T18:01:47Z",
+  "decisions": [
+    {
+      "phase": "design_review_ceremony",
+      "decision": "Design review completed for: man tem essa task se quiser ver depois:\n——————â",
+      "rationale": "## Synthesis: Service Partner RBAC Implementation\n\n### 1. CONFLICTS\n\n| Dimension | Codex | Gemini | Status |\n|-----------|-------|--------|--------|\n| **Abstraction level** | Architectural principles ",
+      "date": "2026-06-10",
+      "commit": "none"
+    },
+    {
+      "phase": "validate_tangle_results",
+      "decision": "Quality gate PASSED: 100% success rate (threshold: 75%)",
+      "rationale": "Success: 3/3, failures: 0, threshold: 75%",
+      "date": "2026-06-10",
+      "commit": "none"
+    },
+    {
+      "phase": "ink_deliver/cross-model-review",
+      "decision": "Review scorecard: sec=5 rel=4 perf=4 acc=5",
+      "rationale": "4x10 cross-model review scores",
+      "date": "2026-06-10",
+      "commit": "none"
+    },
+    {
+      "phase": "design_review_ceremony",
+      "decision": "Design review completed for: seguindo a task: Contexto: login com JWT (access 15min + ref",
+      "rationale": "I cannot complete this synthesis—all three provider approaches are unavailable:\n\n- **Codex**: Auth error (missing API key)\n- **Gemini**: No input provided\n- **Sonnet**: No input provided\n\nTo proceed, ",
+      "date": "2026-08-05",
+      "commit": "1219be3c0dd5e72fbb1be8991cfbed785773551f"
+    },
+    {
+      "phase": "design_review_ceremony",
+      "decision": "Design review completed for: Contexto: coracao do produto — CRUD de itens, movimentacoes ",
+      "rationale": "## Synthesis not possible — no inputs\n\nAll three provider slots returned unavailable, so there is nothing to synthesize. Reporting that plainly rather than manufacturing a review:\n\n- **codex** — faile",
+      "date": "2026-08-12",
+      "commit": "583eb55117976b41e32cd0d3c3fcf8d01642ee88"
+    },
+    {
+      "phase": "design_review_ceremony",
+      "decision": "Design review completed for: Implementar deploy staging + producao (Mahoraga BE), docs/11",
+      "rationale": "## Synthesis: Design Review — Docker/CI Deploy Pipeline (Staging + Production)\n\n**1. CONFLICTS**\nNone assessable. Only the Sonnet approach is available — Codex and Gemini both failed to return (Gemini",
+      "date": "2026-08-15",
+      "commit": "5c6e8aa02c5e4bb9a9cee6997258c7ff05f18b7e"
+    },
+    {
+      "phase": "design_review_ceremony",
+      "decision": "Design review completed for: Backup automático + teste de restauração. RPO 24h/RTO 4h. Ac",
+      "rationale": "## Synthesis: Backup automático + teste de restauração — Design Review\n\n**Availability note:** Only the Sonnet approach returned; Codex was unavailable and Gemini failed on a missing `GEMINI_API_KEY`.",
+      "date": "2026-08-15",
+      "commit": "9bd92f4aa89a700f983459a15e9ec495ac34e864"
+    },
+    {
+      "phase": "design_review_ceremony",
+      "decision": "Design review completed for: Adicionar suporte para a propriedade 'rememberMe' no endpoin",
+      "rationale": "## Synthesis\n\n**CONFLICTS:** Only the Sonnet approach is available (Codex and Gemini unavailable). No inter-provider conflicts to resolve.\n\n**GAPS:** Sonnet identifies the rotation-persistence fork cl",
+      "date": "2026-08-19",
+      "commit": "b61e273a7aa6cf4f0f0013cca8060d07b50c8bff"
+    }
+  ],
+  "blockers": [],
+  "context": {
+    "discover": null,
+    "define": null,
+    "develop": null,
+    "deliver": null
+  },
+  "metrics": {
+    "phases_completed": 0,
+    "total_execution_time_minutes": 0,
+    "provider_usage": {
+      "codex": 7,
+      "gemini": 1,
+      "perplexity": 0,
+      "claude": 0
+    }
+  }
+}

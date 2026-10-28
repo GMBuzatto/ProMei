@@ -1,0 +1,29 @@
+# Scripts de build (postinstall) permitidos — evita execução silenciosa de scripts
+# de dependências. `allowBuilds` é lido pelo pnpm 11+; `onlyBuiltDependencies`
+# mantém compatibilidade com o pnpm 10.
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  '@swc/core': true
+  argon2: true
+  cpu-features: true
+  esbuild: true
+  prisma: true
+  protobufjs: true
+  ssh2: true
+
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@swc/core'
+  - argon2
+  - cpu-features
+  - esbuild
+  - prisma
+  - protobufjs
+  - ssh2
+
+# Correções de segurança forçadas na árvore transitiva.
+# find-my-way <=9.6.0: DDoS via HTTP/2 (GHSA-c96f-x56v-gq3h), vem do @nestjs/platform-fastify.
+overrides:
+  find-my-way: '>=9.6.1'

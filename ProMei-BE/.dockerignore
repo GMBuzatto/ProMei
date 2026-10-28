@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+storage
+src/generated
+.git
+.githooks
+.github
+docs
+test
+*.md
+.env
+.env.*
+!.env.example

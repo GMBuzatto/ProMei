@@ -1,0 +1,25 @@
+{
+  // Usa o TypeScript do projeto (5.9.3), nao o embutido no editor.
+  // Sem isso, o editor acusa erros que o `pnpm typecheck` nao acusa - e vice-versa.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  // Finais de linha LF, alinhado com .editorconfig, .gitattributes e Prettier.
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // Formata no save com Prettier: o job `lint` do CI roda `format:check`.
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "eslint.useFlatConfig": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true
+  }
+}

@@ -1,0 +1,80 @@
+name: Backup Postgres
+
+# docs/11-infra-ci-cd.md, secao "Backup e desastre": backup automatico diario do
+# Postgres de producao, criptografado, retencao de 30 dias (RPO 24h).
+#
+# Fluxo: pg_dump (formato custom) -> metadados (checksum + contagem exata de
+# linhas por tabela extraida do proprio dump, .github/backup/dump-row-counts.sh)
+# -> criptografia GPG simetrica -> upload para S3. O job de teste de restauracao
+# (backup-restore-test.yml) roda em seguida e consome o backup mais recente via
+# "latest/prefix.txt".
+on:
+  schedule:
+    # 06:00 UTC = 03:00 America/Sao_Paulo.
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    name: dump-encrypt-upload
+    runs-on: ubuntu-latest
+    # Environment dedicado "backup" (sem required reviewers) — NAO usar
+    # "production": esse environment tem aprovacao manual obrigatoria
+    # (docs/11-infra-ci-cd.md), o que travaria toda execucao agendada
+    # esperando um humano aprovar, quebrando o backup "automatico".
+    environment: backup
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
+      BACKUP_S3_BUCKET: ${{ vars.BACKUP_S3_BUCKET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-postgres-client
+
+      - name: Dump do banco (formato custom)
+        run: pg_dump --format=custom --file=backup.dump "$DATABASE_URL"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Gerar metadados (checksum + contagem exata de linhas)
+        # Contagem derivada do proprio arquivo de dump (dump-row-counts.sh),
+        # nao de uma nova query ao banco — evita divergencia por escritas
+        # concorrentes entre o pg_dump e esta etapa (ver comentario no script).
+        run: |
+          set -euo pipefail
+          chmod +x .github/backup/dump-row-counts.sh
+          .github/backup/dump-row-counts.sh backup.dump > row-counts.json
+          jq -n \
+            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg sha256 "$(sha256sum backup.dump | awk '{print $1}')" \
+            --argjson sizeBytes "$(stat -c%s backup.dump)" \
+            --slurpfile rowCounts row-counts.json \
+            '{timestamp: $timestamp, sha256: $sha256, sizeBytes: $sizeBytes, rowCounts: $rowCounts[0]}' \
+            > metadata.json
+
+      - name: Criptografar dump (GPG simetrico, AES256)
+        run: |
+          echo -n "$BACKUP_ENCRYPTION_KEY" | gpg --batch --yes --pinentry-mode loopback \
+            --passphrase-fd 0 --symmetric --cipher-algo AES256 \
+            --output backup.dump.gpg backup.dump
+        env:
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+
+      - name: Garantir politica de retencao do bucket (30 dias)
+        run: |
+          aws s3api put-bucket-lifecycle-configuration \
+            --bucket "$BACKUP_S3_BUCKET" \
+            --lifecycle-configuration file://.github/backup/lifecycle-policy.json
+
+      - name: Upload do backup criptografado e dos metadados
+        run: |
+          set -euo pipefail
+          prefix="postgres/$(date -u +%Y%m%dT%H%M%SZ)"
+          aws s3 cp backup.dump.gpg "s3://${BACKUP_S3_BUCKET}/${prefix}/backup.dump.gpg"
+          aws s3 cp metadata.json "s3://${BACKUP_S3_BUCKET}/${prefix}/metadata.json"
+          # Ponteiro pro backup mais recente, consumido pelo job de restore.
+          echo -n "$prefix" | aws s3 cp - "s3://${BACKUP_S3_BUCKET}/latest/prefix.txt"

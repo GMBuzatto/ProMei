@@ -1,0 +1,93 @@
+name: CI
+
+# O `postinstall` do package.json roda `prisma generate`: a partir do Prisma 7 o
+# client nao vive em node_modules nem no repositorio, entao sem gerar nada compila.
+#
+# Gates de PR conforme docs/11-infra-ci-cd.md:
+# lint + typecheck -> testes -> audit de dependencias -> build.
+# Os quatro jobs rodam em paralelo e sao exigidos como required status checks
+# nos rulesets de development, staging e main (.github/rulesets/).
+
+# Dispara apenas no Pull Request, filtrando pela branch de DESTINO.
+# Nao ha gatilho de push: o merge do PR nao gera uma segunda execucao.
+on:
+  pull_request:
+    branches: [development, staging, main]
+
+# Um PR atualizado cancela a execucao anterior.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Prettier
+        run: pnpm format:check
+      - name: ESLint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Testes unitarios e de integracao
+        run: pnpm test
+
+  audit:
+    name: audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Bloqueante: vulnerabilidade critica reprova o PR (docs/09-seguranca.md).
+      - name: Auditoria de dependencias (critica bloqueia)
+        run: pnpm audit --audit-level critical
+      # Informativo: high aparece no log sem reprovar, para triagem.
+      - name: Auditoria de dependencias (high, informativo)
+        if: always()
+        continue-on-error: true
+        run: pnpm audit --audit-level high
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build

@@ -1,0 +1,447 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * Tokens deste arquivo vêm de docs/styles/temas/default.md e docs/styles/DESIGN-SYSTEM.md
+ * (fonte de verdade). Não hardcodar HEX em componentes — ver docs/16-configuracao-sem-hardcode.md.
+ *
+ * :root/.dark = tema "default". Blocos [data-niche="..."] abaixo sobrescrevem só a camada
+ * de marca por segmento da empresa, sem rebuild — mecanismo e fórmula completos em
+ * docs/styles/temas/README.md. Neutros e cores semânticas (success/warning/danger/info)
+ * não variam por nicho.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Background */
+  --background: #f8fafc;
+  --background-subtle: #f1f5f9;
+  --background-disabled: #f1f5f9;
+  --background-inverse: #0f172a;
+
+  /* Surface */
+  --surface: #ffffff;
+  --surface-subtle: #f8fafc;
+  --surface-raised: #ffffff;
+  --surface-hover: #f1f5f9;
+  --surface-selected: #eff6ff;
+
+  /* Text */
+  --foreground: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --text-disabled: #94a3b8;
+  --text-inverse: #ffffff;
+  --text-brand: #2563eb;
+  --text-success: #15803d;
+  --text-warning: #b45309;
+  --text-danger: #dc2626;
+  --text-info: #0369a1;
+
+  /* Border */
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-strong: #cbd5e1;
+  --border-disabled: #e2e8f0;
+  --border-brand: #3b82f6;
+  --border-danger: #ef4444;
+
+  /* Action — Primary (marca) */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-pressed: #1e40af;
+  --primary-disabled: #bfdbfe;
+  --primary-foreground: #ffffff;
+
+  /* Action — Secondary */
+  --secondary: #ffffff;
+  --secondary-hover: #f8fafc;
+  --secondary-pressed: #f1f5f9;
+  --secondary-foreground: #334155;
+  --secondary-border: #cbd5e1;
+
+  /* Status */
+  --status-success-bg: #f0fdf4;
+  --status-success-text: #15803d;
+  --status-success-icon: #16a34a;
+  --status-success-border: #bbf7d0;
+
+  --status-warning-bg: #fffbeb;
+  --status-warning-text: #b45309;
+  --status-warning-icon: #d97706;
+  --status-warning-border: #fde68a;
+
+  --status-danger-bg: #fef2f2;
+  --status-danger-text: #b91c1c;
+  --status-danger-icon: #dc2626;
+  --status-danger-border: #fecaca;
+
+  --status-info-bg: #f0f9ff;
+  --status-info-text: #0369a1;
+  --status-info-icon: #0284c7;
+  --status-info-border: #bae6fd;
+
+  /* Navigation */
+  --nav-background: #ffffff;
+  --nav-border: #e2e8f0;
+  --nav-text: #475569;
+  --nav-text-hover: #0f172a;
+  --nav-icon: #64748b;
+  --nav-item-hover: #f1f5f9;
+  --nav-item-active: #eff6ff;
+  --nav-text-active: #1d4ed8;
+  --nav-icon-active: #2563eb;
+
+  /* Inputs */
+  --input: #ffffff;
+  --input-border: #cbd5e1;
+  --input-border-hover: #94a3b8;
+  --input-border-focus: #3b82f6;
+  --input-placeholder: #94a3b8;
+  --input-disabled-bg: #f1f5f9;
+  --input-error: #ef4444;
+
+  /* Table */
+  --table-background: #ffffff;
+  --table-header: #f8fafc;
+  --table-row: #ffffff;
+  --table-row-hover: #f8fafc;
+  --table-row-selected: #eff6ff;
+  --table-divider: #e2e8f0;
+
+  /* Overlay / Focus */
+  --overlay: rgb(15 23 42 / 40%);
+  --focus-ring: rgb(59 130 246 / 25%);
+
+  /* shadcn/ui — mapeados para os tokens acima */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --muted: var(--background-subtle);
+  --muted-foreground: var(--text-tertiary);
+  --accent: var(--surface-hover);
+  --accent-foreground: var(--foreground);
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --ring: var(--input-border-focus);
+}
+
+.dark {
+  /* Background */
+  --background: #0b1120;
+  --background-subtle: #0f172a;
+  --background-disabled: #1e293b;
+  --background-inverse: #f8fafc;
+
+  /* Surface */
+  --surface: #0f172a;
+  --surface-subtle: #172033;
+  --surface-raised: #172033;
+  --surface-hover: #1e293b;
+  --surface-selected: #172554;
+
+  /* Text */
+  --foreground: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-disabled: #475569;
+  --text-inverse: #0f172a;
+  --text-brand: #60a5fa;
+  --text-success: #4ade80;
+  --text-warning: #fbbf24;
+  --text-danger: #f87171;
+  --text-info: #38bdf8;
+
+  /* Border */
+  --border: #334155;
+  --border-subtle: #1e293b;
+  --border-strong: #475569;
+  --border-disabled: #1e293b;
+  --border-brand: #60a5fa;
+  --border-danger: #f87171;
+
+  /* Action — Primary (marca) */
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-pressed: #2563eb;
+  --primary-disabled: #1e3a8a;
+  --primary-foreground: #ffffff;
+
+  /* Action — Secondary */
+  --secondary: #1e293b;
+  --secondary-hover: #334155;
+  --secondary-pressed: #475569;
+  --secondary-foreground: #f1f5f9;
+  --secondary-border: #475569;
+
+  /* Status */
+  --status-success-bg: #052e16;
+  --status-success-text: #4ade80;
+  --status-success-icon: #4ade80;
+  --status-success-border: #14532d;
+
+  --status-warning-bg: #451a03;
+  --status-warning-text: #fbbf24;
+  --status-warning-icon: #fbbf24;
+  --status-warning-border: #78350f;
+
+  --status-danger-bg: #450a0a;
+  --status-danger-text: #f87171;
+  --status-danger-icon: #f87171;
+  --status-danger-border: #7f1d1d;
+
+  --status-info-bg: #082f49;
+  --status-info-text: #38bdf8;
+  --status-info-icon: #38bdf8;
+  --status-info-border: #0c4a6e;
+
+  /* Navigation */
+  --nav-background: #0f172a;
+  --nav-border: #1e293b;
+  --nav-text: #cbd5e1;
+  --nav-text-hover: #f8fafc;
+  --nav-icon: #94a3b8;
+  --nav-item-hover: #1e293b;
+  --nav-item-active: #172554;
+  --nav-text-active: #93c5fd;
+  --nav-icon-active: #60a5fa;
+
+  /* Inputs */
+  --input: #0f172a;
+  --input-border: #334155;
+  --input-border-hover: #475569;
+  --input-border-focus: #60a5fa;
+  --input-placeholder: #64748b;
+  --input-disabled-bg: #1e293b;
+  --input-error: #f87171;
+
+  /* Table */
+  --table-background: #0f172a;
+  --table-header: #172033;
+  --table-row: #0f172a;
+  --table-row-hover: #1e293b;
+  --table-row-selected: #172554;
+  --table-divider: #1e293b;
+
+  /* Overlay / Focus */
+  --overlay: rgb(0 0 0 / 60%);
+  --focus-ring: rgb(96 165 250 / 35%);
+
+  /* shadcn/ui */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --muted: var(--background-subtle);
+  --muted-foreground: var(--text-tertiary);
+  --accent: var(--surface-hover);
+  --accent-foreground: var(--foreground);
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --ring: var(--input-border-focus);
+}
+
+/*
+ * Temas por nicho — só a camada de marca é sobrescrita (ver docs/styles/temas/README.md).
+ * `alimenticio` e `saude` são placeholders de exemplo (docs/styles/temas/*.md); a paleta
+ * final de cada nicho é decisão do time de design/produto.
+ */
+
+[data-niche="alimenticio"] {
+  --primary: #ea580c;
+  --primary-hover: #c2410c;
+  --primary-pressed: #9a3412;
+  --primary-disabled: #fed7aa;
+  --text-brand: #ea580c;
+  --border-brand: #f97316;
+  --surface-selected: #fff7ed;
+  --nav-item-active: #fff7ed;
+  --nav-text-active: #c2410c;
+  --nav-icon-active: #ea580c;
+  --table-row-selected: #fff7ed;
+  --input-border-focus: #f97316;
+  --focus-ring: rgb(249 115 22 / 25%);
+  --ring: var(--input-border-focus);
+}
+
+[data-niche="alimenticio"].dark {
+  --primary: #f97316;
+  --primary-hover: #fb923c;
+  --primary-pressed: #ea580c;
+  --primary-disabled: #7c2d12;
+  --text-brand: #fb923c;
+  --border-brand: #fb923c;
+  --surface-selected: #431407;
+  --nav-item-active: #431407;
+  --nav-text-active: #fdba74;
+  --nav-icon-active: #fb923c;
+  --table-row-selected: #431407;
+  --input-border-focus: #fb923c;
+  --focus-ring: rgb(251 146 60 / 35%);
+  --ring: var(--input-border-focus);
+}
+
+[data-niche="saude"] {
+  --primary: #0d9488;
+  --primary-hover: #0f766e;
+  --primary-pressed: #115e59;
+  --primary-disabled: #99f6e4;
+  --text-brand: #0d9488;
+  --border-brand: #14b8a6;
+  --surface-selected: #f0fdfa;
+  --nav-item-active: #f0fdfa;
+  --nav-text-active: #0f766e;
+  --nav-icon-active: #0d9488;
+  --table-row-selected: #f0fdfa;
+  --input-border-focus: #14b8a6;
+  --focus-ring: rgb(20 184 166 / 25%);
+  --ring: var(--input-border-focus);
+}
+
+[data-niche="saude"].dark {
+  --primary: #14b8a6;
+  --primary-hover: #2dd4bf;
+  --primary-pressed: #0d9488;
+  --primary-disabled: #134e4a;
+  --text-brand: #2dd4bf;
+  --border-brand: #2dd4bf;
+  --surface-selected: #042f2e;
+  --nav-item-active: #042f2e;
+  --nav-text-active: #5eead4;
+  --nav-icon-active: #2dd4bf;
+  --table-row-selected: #042f2e;
+  --input-border-focus: #2dd4bf;
+  --focus-ring: rgb(45 212 191 / 35%);
+  --ring: var(--input-border-focus);
+}
+
+@theme inline {
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+
+  --color-background: var(--background);
+  --color-background-subtle: var(--background-subtle);
+  --color-background-disabled: var(--background-disabled);
+  --color-background-inverse: var(--background-inverse);
+
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-selected: var(--surface-selected);
+
+  --color-foreground: var(--foreground);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-brand: var(--text-brand);
+  --color-text-success: var(--text-success);
+  --color-text-warning: var(--text-warning);
+  --color-text-danger: var(--text-danger);
+  --color-text-info: var(--text-info);
+
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-border-disabled: var(--border-disabled);
+  --color-border-brand: var(--border-brand);
+  --color-border-danger: var(--border-danger);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-disabled: var(--primary-disabled);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-pressed: var(--secondary-pressed);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-border: var(--secondary-border);
+
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-success-text: var(--status-success-text);
+  --color-status-success-icon: var(--status-success-icon);
+  --color-status-success-border: var(--status-success-border);
+
+  --color-status-warning-bg: var(--status-warning-bg);
+  --color-status-warning-text: var(--status-warning-text);
+  --color-status-warning-icon: var(--status-warning-icon);
+  --color-status-warning-border: var(--status-warning-border);
+
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-danger-text: var(--status-danger-text);
+  --color-status-danger-icon: var(--status-danger-icon);
+  --color-status-danger-border: var(--status-danger-border);
+
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-text: var(--status-info-text);
+  --color-status-info-icon: var(--status-info-icon);
+  --color-status-info-border: var(--status-info-border);
+
+  --color-nav-background: var(--nav-background);
+  --color-nav-border: var(--nav-border);
+  --color-nav-text: var(--nav-text);
+  --color-nav-text-hover: var(--nav-text-hover);
+  --color-nav-icon: var(--nav-icon);
+  --color-nav-item-hover: var(--nav-item-hover);
+  --color-nav-item-active: var(--nav-item-active);
+  --color-nav-text-active: var(--nav-text-active);
+  --color-nav-icon-active: var(--nav-icon-active);
+
+  --color-input: var(--input);
+  --color-input-border: var(--input-border);
+  --color-input-border-hover: var(--input-border-hover);
+  --color-input-border-focus: var(--input-border-focus);
+  --color-input-placeholder: var(--input-placeholder);
+  --color-input-disabled-bg: var(--input-disabled-bg);
+  --color-input-error: var(--input-error);
+
+  --color-table-background: var(--table-background);
+  --color-table-header: var(--table-header);
+  --color-table-row: var(--table-row);
+  --color-table-row-hover: var(--table-row-hover);
+  --color-table-row-selected: var(--table-row-selected);
+  --color-table-divider: var(--table-divider);
+
+  --color-overlay: var(--overlay);
+  --color-focus-ring: var(--focus-ring);
+
+  /* shadcn/ui */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-focus-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}

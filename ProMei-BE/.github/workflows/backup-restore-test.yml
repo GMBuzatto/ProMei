@@ -1,0 +1,94 @@
+name: Backup Restore Test
+
+# docs/11-infra-ci-cd.md, secao "Backup e desastre": restauracao do backup mais
+# recente validada em ambiente limpo (Postgres 16 novo, sem estado previo),
+# comprovando RTO 4h. Roda logo apos o job de backup (workflow_run) e tambem sob
+# demanda.
+on:
+  workflow_run:
+    workflows: ['Backup Postgres']
+    types: [completed]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  restore-and-validate:
+    name: restore-clean-environment
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    # Ver comentario equivalente em backup-postgres.yml: "production" tem
+    # aprovacao manual obrigatoria e travaria a execucao agendada/automatica.
+    environment: backup
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
+      BACKUP_S3_BUCKET: ${{ vars.BACKUP_S3_BUCKET }}
+      RESTORE_DATABASE_URL: postgresql://restore_test:restore_test@localhost:5432/restore_test
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: restore_test
+          POSTGRES_PASSWORD: restore_test
+          POSTGRES_DB: restore_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U restore_test -d restore_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-postgres-client
+
+      - name: Baixar backup mais recente
+        run: |
+          set -euo pipefail
+          prefix="$(aws s3 cp "s3://${BACKUP_S3_BUCKET}/latest/prefix.txt" -)"
+          aws s3 cp "s3://${BACKUP_S3_BUCKET}/${prefix}/backup.dump.gpg" backup.dump.gpg
+          aws s3 cp "s3://${BACKUP_S3_BUCKET}/${prefix}/metadata.json" metadata.json
+
+      - name: Descriptografar e checar integridade do arquivo
+        run: |
+          set -euo pipefail
+          echo -n "$BACKUP_ENCRYPTION_KEY" | gpg --batch --yes --pinentry-mode loopback \
+            --passphrase-fd 0 --decrypt --output backup.dump backup.dump.gpg
+          expected_sha256="$(jq -r '.sha256' metadata.json)"
+          actual_sha256="$(sha256sum backup.dump | awk '{print $1}')"
+          if [ "$expected_sha256" != "$actual_sha256" ]; then
+            echo "Checksum do dump nao confere com metadata.json (arquivo corrompido em transito/repouso)" >&2
+            exit 1
+          fi
+        env:
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+
+      - name: Restaurar em ambiente limpo (Postgres 16 novo)
+        run: pg_restore --clean --if-exists --no-owner --no-privileges --dbname="$RESTORE_DATABASE_URL" backup.dump
+
+      - name: Validar schema sem drift (Prisma)
+        run: pnpm exec prisma migrate status
+        env:
+          DATABASE_URL: ${{ env.RESTORE_DATABASE_URL }}
+
+      - name: Validar contagem exata de linhas vs. metadados do backup
+        run: |
+          set -euo pipefail
+          psql "$RESTORE_DATABASE_URL" -Atq -f .github/backup/table-row-counts.sql > restored-row-counts.json
+          expected="$(jq -Sc '.rowCounts' metadata.json)"
+          actual="$(jq -Sc '.' restored-row-counts.json)"
+          if [ "$expected" != "$actual" ]; then
+            echo "Contagem de linhas pos-restore diverge do backup:" >&2
+            diff <(echo "$expected" | jq .) <(echo "$actual" | jq .) >&2 || true
+            exit 1
+          fi
+          echo "Restauracao validada: schema sem drift e contagem de linhas confere."

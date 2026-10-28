@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Gate LOCAL de pre-push — paliativo enquanto os rulesets do GitHub estao
+# indisponiveis (repositorio privado no plano Free). Ver docs/11-infra-ci-cd.md.
+#
+# Faz duas coisas:
+#   1. Bloqueia push direto para development, staging e main;
+#   2. Roda os mesmos gates do CI antes de deixar o push sair.
+#
+# Instalacao: pnpm hooks:install  (ou git config core.hooksPath .githooks)
+# Bypass emergencial: PUSH_SEM_GATE=1 git push   (ou git push --no-verify)
+
+set -uo pipefail
+
+BRANCHES_PROTEGIDAS="development staging main master"
+
+if [ "${PUSH_SEM_GATE:-0}" = "1" ]; then
+  echo "pre-push: PUSH_SEM_GATE=1, gates ignorados."
+  exit 0
+fi
+
+# 1) Push direto para branch protegida
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  [ -z "${remote_ref:-}" ] && continue
+  branch="${remote_ref#refs/heads/}"
+  for protegida in $BRANCHES_PROTEGIDAS; do
+    if [ "$branch" = "$protegida" ]; then
+      echo ""
+      echo "  BLOQUEADO: push direto para '$branch' nao e permitido."
+      echo "  Abra um Pull Request a partir de uma branch feat/*, fix/* ou chore/*."
+      echo ""
+      echo "  Emergencia: PUSH_SEM_GATE=1 git push"
+      echo ""
+      exit 1
+    fi
+  done
+done
+
+# 2) Mesmos gates do CI
+echo "pre-push: rodando gates locais (lint, typecheck, test)..."
+
+falhou=0
+run() {
+  echo "  -> $1"
+  if ! pnpm "$@" >/tmp/pre-push-$1.log 2>&1; then
+    echo ""
+    echo "  FALHOU: pnpm $*"
+    tail -30 "/tmp/pre-push-$1.log"
+    falhou=1
+  fi
+}
+
+run format:check
+run lint
+run typecheck
+run test
+
+# Audit nao bloqueia o push: depende de rede e o gate real esta no CI.
+if ! pnpm audit --audit-level critical >/dev/null 2>&1; then
+  echo "  AVISO: 'pnpm audit --audit-level critical' acusou algo (ou nao ha rede). O CI vai reprovar."
+fi
+
+if [ "$falhou" -ne 0 ]; then
+  echo ""
+  echo "  Push cancelado. Corrija os erros acima (ou use PUSH_SEM_GATE=1 git push)."
+  echo ""
+  exit 1
+fi
+
+echo "pre-push: tudo verde."
+exit 0
